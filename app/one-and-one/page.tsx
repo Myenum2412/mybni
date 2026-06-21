@@ -1,5 +1,11 @@
 "use client"
 
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "1 & 1",
+}
+
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,

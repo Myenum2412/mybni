@@ -13,8 +13,8 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "BNI",
-  description: "BNI Member Portal",
+  title: { default: "BNI", template: "%s | BNI" },
+  description: "BNI Member Portal — Business Network International",
 };
 
 export default function RootLayout({

@@ -29,3 +29,10 @@
 {"file":"components/nav-user.tsx","action":"Write","timestamp":"2026-06-21T18:15:37Z","important":false}
 {"file":"app/auth/callback/route.ts","action":"Write","timestamp":"2026-06-21T18:15:57Z","important":false}
 {"file":"app/admin/page.tsx","action":"Write","timestamp":"2026-06-21T18:17:05Z","important":false}
+{"file":"app/globals.css","action":"Edit","timestamp":"2026-06-21T18:36:55Z","important":false}
+{"file":"app/dashboard/page.tsx","action":"Edit","timestamp":"2026-06-21T18:47:09Z","important":false}
+{"file":"app/tyfcb/page.tsx","action":"Edit","timestamp":"2026-06-21T18:47:13Z","important":false}
+{"file":"app/referral-slip/page.tsx","action":"Edit","timestamp":"2026-06-21T18:47:16Z","important":false}
+{"file":"app/one-and-one/page.tsx","action":"Edit","timestamp":"2026-06-21T18:47:17Z","important":false}
+{"file":"app/chapters/page.tsx","action":"Edit","timestamp":"2026-06-21T18:47:19Z","important":false}
+{"file":"app/settings/page.tsx","action":"Edit","timestamp":"2026-06-21T18:47:22Z","important":false}

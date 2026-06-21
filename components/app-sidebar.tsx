@@ -49,11 +49,12 @@ const data = {
           title: "Chapters",
           url: "/chapters",
         },
-        {
-          title: "Users",
-          url: "/users",
-        },
       ],
+    },
+    {
+      title: "Users",
+      url: "/users",
+      icon: <UsersIcon />,
     },
     {
       title: "Admin",

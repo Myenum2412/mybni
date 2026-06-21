@@ -1,5 +1,11 @@
 "use client"
 
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Admin",
+}
+
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react"
 import { createClient } from "@/lib/supabase/client"
-import type { User, Session } from "@supabase/supabase-js"
+import type { Session } from "@supabase/supabase-js"
 
 interface AuthUser {
   id: string
@@ -36,46 +36,59 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const supabase = createClient()
 
   const fetchUserProfile = useCallback(async (userId: string, userEmail: string) => {
-    const { data: profile } = await supabase
-      .from("users")
-      .select("id, email, role, chapter_id")
-      .eq("id", userId)
-      .single()
-
-    if (profile) {
-      setUser({
-        id: profile.id,
-        email: profile.email,
-        role: profile.role || "member",
-        chapter_id: profile.chapter_id,
-      })
-    } else {
-      // Create user profile if doesn't exist
-      const { data: newProfile } = await supabase
+    try {
+      const { data: profile, error } = await supabase
         .from("users")
-        .insert({ id: userId, email: userEmail, role: "member" })
         .select("id, email, role, chapter_id")
+        .eq("id", userId)
         .single()
 
-      if (newProfile) {
+      if (error || !profile) {
+        // Users table might not exist yet or user not found — create profile
+        const { data: newProfile, error: insertError } = await supabase
+          .from("users")
+          .upsert({ id: userId, email: userEmail, role: "member" })
+          .select("id, email, role, chapter_id")
+          .single()
+
+        if (!insertError && newProfile) {
+          setUser({
+            id: newProfile.id,
+            email: newProfile.email,
+            role: newProfile.role || "member",
+            chapter_id: newProfile.chapter_id,
+          })
+        } else {
+          // Fallback: set basic user without DB profile
+          setUser({ id: userId, email: userEmail, role: "member", chapter_id: null })
+        }
+      } else {
         setUser({
-          id: newProfile.id,
-          email: newProfile.email,
-          role: newProfile.role || "member",
-          chapter_id: newProfile.chapter_id,
+          id: profile.id,
+          email: profile.email,
+          role: profile.role || "member",
+          chapter_id: profile.chapter_id,
         })
       }
+    } catch {
+      // If users table doesn't exist, still allow login with basic info
+      setUser({ id: userId, email: userEmail, role: "member", chapter_id: null })
     }
   }, [supabase])
 
   const refreshUser = useCallback(async () => {
-    const { data: { session: currentSession } } = await supabase.auth.getSession()
-    setSession(currentSession ?? null)
+    try {
+      const { data: { session: currentSession } } = await supabase.auth.getSession()
+      setSession(currentSession ?? null)
 
-    if (currentSession?.user) {
-      await fetchUserProfile(currentSession.user.id, currentSession.user.email ?? "")
-    } else {
+      if (currentSession?.user) {
+        await fetchUserProfile(currentSession.user.id, currentSession.user.email ?? "")
+      } else {
+        setUser(null)
+      }
+    } catch {
       setUser(null)
+      setSession(null)
     }
     setLoading(false)
   }, [supabase, fetchUserProfile])

@@ -1,5 +1,11 @@
 "use client"
 
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Entry Form",
+}
+
 import { useState } from "react"
 import {
   Card,

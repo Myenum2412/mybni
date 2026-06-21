@@ -1,5 +1,11 @@
 "use client"
 
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Settings",
+}
+
 import { useState } from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 import {

@@ -1,5 +1,11 @@
 "use client"
 
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Referral Slip",
+}
+
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,

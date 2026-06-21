@@ -1,6 +1,13 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Users",
+}
+
+import { useState, useMemo, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -39,6 +46,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useChapters, useTyfcbs, useReferrals, useOneAndOnes } from "@/lib/supabase/hooks"
+import { useAuth } from "@/lib/supabase/auth"
 import { UsersIcon } from "lucide-react"
 
 interface UserEntry {
@@ -51,12 +59,37 @@ interface UserEntry {
 }
 
 export default function UsersPage() {
+  const { user, loading: authLoading } = useAuth()
+  const router = useRouter()
   const { chapters } = useChapters()
   const { tyfcbs } = useTyfcbs()
   const { referrals } = useReferrals()
   const { oneAndOnes } = useOneAndOnes()
 
+  const isAdmin = user?.role === "admin" || user?.role === "superadmin"
+
+  // For non-admin users, auto-filter to their chapter
+  const userChapterName = useMemo(() => {
+    if (!user?.chapter_id) return null
+    const chapter = chapters.find((c) => c.id === user.chapter_id)
+    return chapter?.name ?? null
+  }, [user?.chapter_id, chapters])
+
   const [selectedChapter, setSelectedChapter] = useState<string>("all")
+
+  // Reset filter when user/chapter changes
+  useEffect(() => {
+    if (!isAdmin && userChapterName) {
+      setSelectedChapter(userChapterName)
+    }
+  }, [isAdmin, userChapterName])
+
+  // Redirect non-admin users away if they try to access without a chapter
+  useEffect(() => {
+    if (!authLoading && !isAdmin && !userChapterName && chapters.length > 0) {
+      // Non-admin without a chapter assignment — still allow access but show empty
+    }
+  }, [authLoading, isAdmin, userChapterName, chapters])
 
   const allEntries = useMemo(() => {
     const entries: UserEntry[] = []
@@ -103,7 +136,6 @@ export default function UsersPage() {
     return allEntries.filter((e) => e.chapterName === selectedChapter)
   }, [allEntries, selectedChapter])
 
-  // Unique chapter names from data
   const chapterNames = useMemo(() => {
     const names = new Set<string>()
     allEntries.forEach((e) => {
@@ -111,6 +143,14 @@ export default function UsersPage() {
     })
     return Array.from(names).sort()
   }, [allEntries])
+
+  if (authLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <span className="text-muted-foreground">Loading...</span>
+      </div>
+    )
+  }
 
   return (
     <SidebarProvider>
@@ -136,7 +176,9 @@ export default function UsersPage() {
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
           <div>
             <h1 className="text-2xl font-bold">Users</h1>
-            <p className="text-sm text-muted-foreground">Member activity across all chapters</p>
+            <p className="text-sm text-muted-foreground">
+              {isAdmin ? "Member activity across all chapters" : `Your chapter: ${userChapterName || "Not assigned"}`}
+            </p>
           </div>
 
           {/* Chapter Filter Card */}
@@ -144,22 +186,30 @@ export default function UsersPage() {
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
                 <UsersIcon className="size-4" />
-                Filter by Chapter
+                {isAdmin ? "Filter by Chapter" : "Your Chapter"}
               </CardTitle>
-              <CardDescription>Select a chapter to filter user activity</CardDescription>
+              <CardDescription>
+                {isAdmin ? "Select a chapter to filter user activity" : "Showing activity for your assigned chapter"}
+              </CardDescription>
             </CardHeader>
             <CardContent>
-              <Select value={selectedChapter} onValueChange={(v) => setSelectedChapter(v ?? "all")}>
-                <SelectTrigger className="w-full sm:w-64">
-                  <SelectValue placeholder="Select chapter" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Chapters</SelectItem>
-                  {chapters.map((c) => (
-                    <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {isAdmin ? (
+                <Select value={selectedChapter} onValueChange={(v) => setSelectedChapter(v ?? "all")}>
+                  <SelectTrigger className="w-full sm:w-64">
+                    <SelectValue placeholder="Select chapter" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Chapters</SelectItem>
+                    {chapters.map((c) => (
+                      <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="rounded-md border px-3 py-2 text-sm font-medium">
+                  {userChapterName || "No chapter assigned"}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -168,9 +218,9 @@ export default function UsersPage() {
             <CardHeader>
               <CardTitle>User Activity</CardTitle>
               <CardDescription>
-                {selectedChapter === "all"
+                {isAdmin && selectedChapter === "all"
                   ? `Showing all ${filteredEntries.length} entries across all chapters`
-                  : `Showing ${filteredEntries.length} entries for ${selectedChapter}`}
+                  : `Showing ${filteredEntries.length} entries${userChapterName ? ` for ${userChapterName}` : ""}`}
               </CardDescription>
             </CardHeader>
             <CardContent>
