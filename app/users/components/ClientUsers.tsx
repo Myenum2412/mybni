@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -78,14 +78,6 @@ interface ClientUsersProps {
 export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, currentUser }: ClientUsersProps) {
   const isAdmin = currentUser?.role === "admin" || currentUser?.role === "superadmin"
 
-  const userChapterName = useMemo(() => {
-    if (!currentUser?.chapter_id) return null
-    const chapter = chapters.find((c) => c.id === currentUser.chapter_id)
-    return chapter?.name ?? null
-  }, [currentUser?.chapter_id, chapters])
-
-  const [selectedChapter, setSelectedChapter] = useState<string>("all")
-
   // Create user form state
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newUserName, setNewUserName] = useState("")
@@ -97,12 +89,6 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
   const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
   const [createSuccess, setCreateSuccess] = useState(false)
-
-  useEffect(() => {
-    if (!isAdmin && userChapterName) {
-      setSelectedChapter(userChapterName)
-    }
-  }, [isAdmin, userChapterName])
 
   const allEntries = useMemo(() => {
     const entries: UserEntry[] = []
@@ -140,10 +126,7 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
     return entries
   }, [tyfcbs, referrals, oneAndOnes])
 
-  const filteredEntries = useMemo(() => {
-    if (selectedChapter === "all") return allEntries
-    return allEntries.filter((e) => e.chapterName === selectedChapter)
-  }, [allEntries, selectedChapter])
+  const filteredEntries = allEntries
 
   const resetCreateForm = () => {
     setNewUserName("")
@@ -219,163 +202,102 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
           <div>
             <h1 className="text-2xl font-bold">Users</h1>
             <p className="text-sm text-muted-foreground">
-              {isAdmin ? "Manage members and view activity across all chapters" : `Your chapter: ${userChapterName || "Not assigned"}`}
+              Manage members and view activity
             </p>
           </div>
 
           {/* Create User Card */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <UserPlusIcon className="size-4 text-red-600" />
-                Create New User
-              </CardTitle>
-              <CardDescription>Add a new member to {isAdmin ? "any chapter" : "your chapter"}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Dialog open={showCreateForm} onOpenChange={(open) => { setShowCreateForm(open); if (!open) resetCreateForm(); }}>
-                <DialogTrigger
-                  render={
-                    <Button className="bg-red-600 hover:bg-red-700">
-                      <PlusIcon className="mr-2 size-4" />
-                      Create User
-                    </Button>
-                  }
-                />
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Create New User</DialogTitle>
-                    <DialogDescription>Fill in the details to create a new member account</DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    {createError && (
-                      <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-600">
-                        {createError}
-                      </div>
-                    )}
-                    {createSuccess && (
-                      <div className="rounded-md bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-600">
-                        User created successfully!
-                      </div>
-                    )}
-                    <div className="grid gap-2">
-                      <Label htmlFor="new-name">Name</Label>
-                      <Input
-                        id="new-name"
-                        placeholder="Enter full name"
-                        value={newUserName}
-                        onChange={(e) => setNewUserName(e.target.value)}
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="new-email">Email ID</Label>
-                      <Input
-                        id="new-email"
-                        type="email"
-                        placeholder="john@example.com"
-                        value={newUserEmail}
-                        onChange={(e) => setNewUserEmail(e.target.value)}
-                      />
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="new-password">Password</Label>
-                      <div className="relative">
-                        <Input
-                          id="new-password"
-                          type={showPassword ? "text" : "password"}
-                          placeholder="••••••••"
-                          value={newUserPassword}
-                          onChange={(e) => setNewUserPassword(e.target.value)}
-                          className="pr-10"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                          tabIndex={-1}
-                        >
-                          {showPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
-                        </button>
-                      </div>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="new-chapter">Chapter</Label>
-                      <Select value={newUserChapterId} onValueChange={(v) => setNewUserChapterId(v ?? "")}>
-                        <SelectTrigger id="new-chapter">
-                          <SelectValue placeholder="Select chapter" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {chapters.map((c) => (
-                            <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="grid gap-2">
-                      <Label htmlFor="new-role">Role</Label>
-                      <Select value={newUserRole} onValueChange={(v) => setNewUserRole(v ?? "member")}>
-                        <SelectTrigger id="new-role">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="member">Member</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="superadmin">Super Admin</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+          <Dialog open={showCreateForm} onOpenChange={(open) => { setShowCreateForm(open); if (!open) resetCreateForm(); }}>
+            <Card>
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <UserPlusIcon className="size-4 text-red-600" />
+                      Create New User
+                    </CardTitle>
+                    <CardDescription>Add a new member to {isAdmin ? "any chapter" : "your chapter"}</CardDescription>
                   </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => { setShowCreateForm(false); resetCreateForm(); }}>Cancel</Button>
-                    <Button onClick={handleCreateUser} disabled={creating} className="bg-red-600 hover:bg-red-700">
-                      {creating ? <Loader2Icon className="mr-2 size-4 animate-spin" /> : "Create User"}
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </CardContent>
-          </Card>
-
-          {/* Chapter Filter Card */}
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <UsersIcon className="size-4" />
-                {isAdmin ? "Filter by Chapter" : "Your Chapter"}
-              </CardTitle>
-              <CardDescription>
-                {isAdmin ? "Select a chapter to filter user activity" : "Showing activity for your assigned chapter"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {isAdmin ? (
-                <Select value={selectedChapter} onValueChange={(v) => setSelectedChapter(v ?? "all")}>
-                  <SelectTrigger className="w-full sm:w-64">
-                    <SelectValue placeholder="Select chapter" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Chapters</SelectItem>
-                    {chapters.map((c) => (
-                      <SelectItem key={c.id} value={c.name}>{c.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              ) : (
-                <div className="rounded-md border px-3 py-2 text-sm font-medium">
-                  {userChapterName || "No chapter assigned"}
+                  <DialogTrigger
+                    render={
+                      <Button className="bg-red-600 hover:bg-red-700">
+                        <PlusIcon className="mr-2 size-4" />
+                        Create User
+                      </Button>
+                    }
+                  />
                 </div>
-              )}
-            </CardContent>
-          </Card>
+              </CardHeader>
+            </Card>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Create New User</DialogTitle>
+                <DialogDescription>Fill in the details to create a new member account</DialogDescription>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                {createError && (
+                  <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+                    {createError}
+                  </div>
+                )}
+                {createSuccess && (
+                  <div className="rounded-md bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-600">
+                    User created successfully!
+                  </div>
+                )}
+                <div className="grid gap-2">
+                  <Label htmlFor="new-name">Name</Label>
+                  <Input id="new-name" placeholder="Enter full name" value={newUserName} onChange={(e) => setNewUserName(e.target.value)} />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="new-email">Email ID</Label>
+                  <Input id="new-email" type="email" placeholder="john@example.com" value={newUserEmail} onChange={(e) => setNewUserEmail(e.target.value)} />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="new-password">Password</Label>
+                  <div className="relative">
+                    <Input id="new-password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={newUserPassword} onChange={(e) => setNewUserPassword(e.target.value)} className="pr-10" />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" tabIndex={-1}>
+                      {showPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
+                    </button>
+                  </div>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="new-chapter">Chapter</Label>
+                  <Select value={newUserChapterId} onValueChange={(v) => setNewUserChapterId(v ?? "")}>
+                    <SelectTrigger id="new-chapter"><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                    <SelectContent>
+                      {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="new-role">Role</Label>
+                  <Select value={newUserRole} onValueChange={(v) => setNewUserRole(v ?? "member")}>
+                    <SelectTrigger id="new-role"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="member">Member</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                      <SelectItem value="superadmin">Super Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => { setShowCreateForm(false); resetCreateForm(); }}>Cancel</Button>
+                <Button onClick={handleCreateUser} disabled={creating} className="bg-red-600 hover:bg-red-700">
+                  {creating ? <Loader2Icon className="mr-2 size-4 animate-spin" /> : "Create User"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
           {/* User Activity Table */}
           <Card>
             <CardHeader>
               <CardTitle>User Activity</CardTitle>
               <CardDescription>
-                {isAdmin && selectedChapter === "all"
-                  ? `Showing all ${filteredEntries.length} entries across all chapters`
-                  : `Showing ${filteredEntries.length} entries${userChapterName ? ` for ${userChapterName}` : ""}`}
+                Showing {filteredEntries.length} entries
               </CardDescription>
             </CardHeader>
             <CardContent>
