@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default async function AdminPage() {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
 
   const [chapters, tyfcbs, referrals, oneAndOnes] = await Promise.all([
     getServerChapters(),
@@ -19,11 +19,11 @@ export default async function AdminPage() {
   ])
 
   let userRole: string | null = null
-  if (session?.user) {
+  if (authUser) {
     const { data, error } = await supabase
       .from("users")
       .select("role")
-      .eq("id", session.user.id)
+      .eq("id", authUser.id)
       .single()
     if (!error) userRole = data?.role ?? null
   }

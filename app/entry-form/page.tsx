@@ -28,6 +28,7 @@ export default async function EntryFormPage() {
       chapters={filteredChapters}
       userRole={userRole}
       defaultChapterId={userRole === "admin" ? userChapterId : null}
+      currentUser={currentUser ? { id: currentUser.id, email: currentUser.email ?? "", name: (currentUser.user_metadata as any)?.name ?? "" } : null}
     />
   )
 }

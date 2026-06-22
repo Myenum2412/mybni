@@ -9,15 +9,15 @@ export const metadata: Metadata = {
 
 export default async function SettingsPage() {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
   const chapters = await getServerChapters()
 
   let profile = null
-  if (session?.user) {
+  if (authUser) {
     const { data } = await supabase
       .from("users")
       .select("id, email, role, chapter_id")
-      .eq("id", session.user.id)
+      .eq("id", authUser.id)
       .single()
     profile = data
   }

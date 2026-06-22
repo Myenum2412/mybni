@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { createClient } from "@/lib/supabase/server"
-import { getServerUser, getServerProfile, getServerChapters } from "@/lib/supabase/server-data"
+import { getServerUser, getServerProfile, getServerChapters, getServerUsersWithJoinedData } from "@/lib/supabase/server-data"
 import ClientUsers from "./components/ClientUsers"
 
 export const metadata: Metadata = {
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default async function UsersPage() {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
 
   // Get current user role
   const currentUser = await getServerUser()
@@ -22,16 +22,8 @@ export default async function UsersPage() {
   }
 
   // Admin: only see users from their chapter. Superadmin: see all.
-  let usersQuery = supabase
-    .from("users")
-    .select("*, chapters(name)")
-    .order("created_at", { ascending: false })
-
-  if (userRole === "admin" && userChapterId) {
-    usersQuery = usersQuery.eq("chapter_id", userChapterId)
-  }
-
-  const { data: users } = await usersQuery
+  const chapterScope = userRole === "admin" ? userChapterId : null
+  const users = await getServerUsersWithJoinedData(chapterScope)
 
   // Only fetch chapters for superadmin (admin doesn't need chapter selector)
   let chapters: Awaited<ReturnType<typeof getServerChapters>> = []
@@ -41,9 +33,9 @@ export default async function UsersPage() {
 
   return (
     <ClientUsers
-      users={users ?? []}
+      users={users}
       chapters={chapters}
-      currentUser={session?.user ? { id: session.user.id, email: session.user.email ?? "", role: userRole ?? "", chapter_id: userChapterId } : null}
+      currentUser={authUser ? { id: authUser.id, email: authUser.email ?? "", role: userRole ?? "", chapter_id: userChapterId } : null}
     />
   )
 }

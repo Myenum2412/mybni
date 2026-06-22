@@ -4,18 +4,78 @@ import { createClient } from "./server"
 
 export async function getServerUser() {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
-  return session?.user ?? null
+  const { data: { user } } = await supabase.auth.getUser()
+  return user ?? null
 }
 
 export async function getServerProfile(userId: string) {
   const supabase = await createClient()
   const { data } = await supabase
     .from("users")
-    .select("id, email, role, chapter_id")
+    .select("id, email, name, role, chapter_id")
     .eq("id", userId)
     .single()
   return data
+}
+
+export async function getServerUsersWithJoinedData(chapterId?: number | null) {
+  const supabase = await createClient()
+  let query = supabase
+    .from("users")
+    .select("*, chapters(name)")
+    .order("created_at", { ascending: false })
+
+  if (chapterId) {
+    query = query.eq("chapter_id", chapterId)
+  }
+
+  const { data: users } = await query
+  if (!users) return []
+
+  // Fetch counts per user from all tables
+  const userIds = users.map((u) => u.id)
+
+  const [tyfcbsRes, referralsRes, oneAndOnesRes, attendanceRes] = await Promise.all([
+    supabase.from("tyfcbs").select("user_id", { count: "exact", head: true }).in("user_id", userIds),
+    supabase.from("referrals").select("user_id", { count: "exact", head: true }).in("user_id", userIds),
+    supabase.from("one_and_ones").select("user_id", { count: "exact", head: true }).in("user_id", userIds),
+    supabase.from("attendance").select("user_id", { count: "exact", head: true }).in("user_id", userIds),
+  ])
+
+  // Build per-user counts
+  const tyfcbCounts: Record<string, number> = {}
+  const referralCounts: Record<string, number> = {}
+  const oneAndOneCounts: Record<string, number> = {}
+  const attendanceCounts: Record<string, number> = {}
+
+  if (tyfcbsRes.data) {
+    ;(tyfcbsRes.data as any[]).forEach((r: any) => {
+      tyfcbCounts[r.user_id] = (tyfcbCounts[r.user_id] || 0) + 1
+    })
+  }
+  if (referralsRes.data) {
+    ;(referralsRes.data as any[]).forEach((r: any) => {
+      referralCounts[r.user_id] = (referralCounts[r.user_id] || 0) + 1
+    })
+  }
+  if (oneAndOnesRes.data) {
+    ;(oneAndOnesRes.data as any[]).forEach((r: any) => {
+      oneAndOneCounts[r.user_id] = (oneAndOneCounts[r.user_id] || 0) + 1
+    })
+  }
+  if (attendanceRes.data) {
+    ;(attendanceRes.data as any[]).forEach((r: any) => {
+      attendanceCounts[r.user_id] = (attendanceCounts[r.user_id] || 0) + 1
+    })
+  }
+
+  return users.map((u) => ({
+    ...u,
+    tyfcbs_count: tyfcbCounts[u.id] || 0,
+    referrals_count: referralCounts[u.id] || 0,
+    one_and_ones_count: oneAndOneCounts[u.id] || 0,
+    attendance_count: attendanceCounts[u.id] || 0,
+  }))
 }
 
 export async function getServerChapters() {

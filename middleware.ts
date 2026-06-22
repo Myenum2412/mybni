@@ -29,30 +29,30 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user } } = await supabase.auth.getUser()
   const pathname = request.nextUrl.pathname
 
   const isPublic = publicPaths.some((p) => pathname.startsWith(p))
   const isAuthPath = authPaths.some((p) => pathname.startsWith(p))
 
   // Unauthenticated → login
-  if (!session && !isPublic) {
+  if (!user && !isPublic) {
     const redirectUrl = new URL("/login", request.url)
     redirectUrl.searchParams.set("redirect", pathname)
     return NextResponse.redirect(redirectUrl)
   }
 
   // Authenticated on auth pages → dashboard
-  if (session && isAuthPath) {
+  if (user && isAuthPath) {
     return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 
   // Role-based route protection
-  if (session?.user) {
+  if (user) {
     const { data: profile } = await supabase
       .from("users")
       .select("role")
-      .eq("id", session.user.id)
+      .eq("id", user.id)
       .single()
 
     const role = profile?.role ?? null

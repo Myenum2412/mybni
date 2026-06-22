@@ -103,3 +103,9 @@
 {"file":"app/members/components/ClientMembers.tsx","action":"Edit","timestamp":"2026-06-22T06:45:45Z","important":false}
 {"file":"app/settings/page.tsx","action":"Edit","timestamp":"2026-06-22T06:46:40Z","important":false}
 {"file":"app/chapters/page.tsx","action":"Write","timestamp":"2026-06-22T06:47:08Z","important":false}
+{"file":"lib/supabase/auth.tsx","action":"Edit","timestamp":"2026-06-22T06:52:12Z","important":false}
+{"file":"app/admin/page.tsx","action":"Edit","timestamp":"2026-06-22T06:55:15Z","important":false}
+{"file":"supabase/migrations/003_add_user_id_fk.sql","action":"Write","timestamp":"2026-06-22T07:06:34Z","important":false}
+{"file":"supabase/migrations/001_create_tables.sql","action":"Edit","timestamp":"2026-06-22T07:07:11Z","important":false}
+{"file":"app/members/page.tsx","action":"Edit","timestamp":"2026-06-22T07:10:30Z","important":false}
+{"file":"app/api/users/route.ts","action":"Edit","timestamp":"2026-06-22T07:11:26Z","important":false}

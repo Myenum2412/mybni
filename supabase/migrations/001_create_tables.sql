@@ -5,6 +5,7 @@
 CREATE TABLE IF NOT EXISTS public.users (
   id UUID PRIMARY KEY,
   email TEXT NOT NULL UNIQUE,
+  name TEXT,
   role TEXT NOT NULL DEFAULT 'member',
   chapter_id BIGINT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()

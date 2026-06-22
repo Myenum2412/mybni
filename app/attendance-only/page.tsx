@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 
 export default async function AttendanceOnlyPage() {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
 
   let userRole: string | null = null
   let userChapterId: number | null = null
-  if (session?.user) {
-    const { data } = await supabase.from("users").select("role, chapter_id").eq("id", session.user.id).single()
+  if (authUser) {
+    const { data } = await supabase.from("users").select("role, chapter_id").eq("id", authUser.id).single()
     userRole = data?.role ?? null
     userChapterId = data?.chapter_id ?? null
   }

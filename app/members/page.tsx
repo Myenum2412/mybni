@@ -27,7 +27,7 @@ export default async function MembersPage() {
 
   // Pre-fetch attendance data if member role
   let memberMembers: string[] = []
-  let memberAttendance: { id: number; chapter_id: number; member_name: string; date: string; status: string; created_at: string }[] = []
+  let memberAttendance: { id: number; chapter_id: number; user_id: string | null; member_name: string; date: string; status: string; created_at: string }[] = []
   if (userRole === "member" && userChapterId && memberChapter) {
     const today = new Date().toISOString().split("T")[0]
     const [members, attendance] = await Promise.all([

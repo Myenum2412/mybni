@@ -13,6 +13,7 @@ export interface Database {
         Row: {
           id: string
           email: string
+          name: string | null
           role: string
           chapter_id: number | null
           created_at: string
@@ -20,6 +21,7 @@ export interface Database {
         Insert: {
           id: string
           email: string
+          name?: string | null
           role?: string
           chapter_id?: number | null
           created_at?: string
@@ -27,6 +29,7 @@ export interface Database {
         Update: {
           id?: string
           email?: string
+          name?: string | null
           role?: string
           chapter_id?: number | null
           created_at?: string
@@ -71,6 +74,7 @@ export interface Database {
         Row: {
           id: number
           chapter_id: number
+          user_id: string | null
           user_name: string
           thank_you_to: string
           amount: string
@@ -82,6 +86,7 @@ export interface Database {
         Insert: {
           id?: number
           chapter_id: number
+          user_id?: string | null
           user_name: string
           thank_you_to: string
           amount: string
@@ -93,6 +98,7 @@ export interface Database {
         Update: {
           id?: number
           chapter_id?: number
+          user_id?: string | null
           user_name?: string
           thank_you_to?: string
           amount?: string
@@ -106,6 +112,7 @@ export interface Database {
         Row: {
           id: number
           chapter_id: number
+          user_id: string | null
           user_name: string
           referred_to: string
           referral_type: string
@@ -119,6 +126,7 @@ export interface Database {
         Insert: {
           id?: number
           chapter_id: number
+          user_id?: string | null
           user_name: string
           referred_to: string
           referral_type: string
@@ -132,8 +140,9 @@ export interface Database {
         Update: {
           id?: number
           chapter_id?: number
+          user_id?: string | null
           user_name?: string
-          to?: string
+          referred_to?: string
           referral_type?: string
           referral_status?: string
           referral?: string
@@ -147,6 +156,7 @@ export interface Database {
         Row: {
           id: number
           chapter_id: number
+          user_id: string | null
           user_name: string
           met_with: string
           initiated_by: string
@@ -158,6 +168,7 @@ export interface Database {
         Insert: {
           id?: number
           chapter_id: number
+          user_id?: string | null
           user_name: string
           met_with: string
           initiated_by?: string
@@ -169,6 +180,7 @@ export interface Database {
         Update: {
           id?: number
           chapter_id?: number
+          user_id?: string | null
           user_name?: string
           met_with?: string
           initiated_by?: string
@@ -182,6 +194,7 @@ export interface Database {
         Row: {
           id: number
           chapter_id: number
+          user_id: string | null
           member_name: string
           date: string
           status: string
@@ -190,6 +203,7 @@ export interface Database {
         Insert: {
           id?: number
           chapter_id: number
+          user_id?: string | null
           member_name: string
           date: string
           status?: string
@@ -198,6 +212,7 @@ export interface Database {
         Update: {
           id?: number
           chapter_id?: number
+          user_id?: string | null
           member_name?: string
           date?: string
           status?: string
@@ -224,6 +239,7 @@ export type Referral = Tables<'referrals'>
 export type OneAndOne = Tables<'one_and_ones'>
 export type Attendance = Tables<'attendance'>
 
+export type UserInsert = TablesInsert<'users'>
 export type TyfcbInsert = TablesInsert<'tyfcbs'>
 export type ReferralInsert = TablesInsert<'referrals'>
 export type OneAndOneInsert = TablesInsert<'one_and_ones'>

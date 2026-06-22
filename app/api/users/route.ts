@@ -33,6 +33,7 @@ export async function POST(request: Request) {
         .insert({
           id: authData.user.id,
           email,
+          name,
           role: role || "member",
           chapter_id: chapterId ? Number(chapterId) : null,
         })

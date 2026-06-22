@@ -9,12 +9,12 @@ export const metadata: Metadata = {
 
 export default async function ChaptersPage() {
   const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
   const chapters = await getServerChapters()
 
   let userRole: string | null = null
-  if (session?.user) {
-    const { data } = await supabase.from("users").select("role").eq("id", session.user.id).single()
+  if (authUser) {
+    const { data } = await supabase.from("users").select("role").eq("id", authUser.id).single()
     userRole = data?.role ?? null
   }
 

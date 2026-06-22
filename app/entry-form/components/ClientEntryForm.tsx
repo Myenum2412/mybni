@@ -28,9 +28,10 @@ interface ClientEntryFormProps {
   chapters: Chapter[]
   userRole?: string | null
   defaultChapterId?: number | null
+  currentUser?: { id: string; email: string; name: string } | null
 }
 
-export default function ClientEntryForm({ chapters, userRole, defaultChapterId }: ClientEntryFormProps) {
+export default function ClientEntryForm({ chapters, userRole, defaultChapterId, currentUser }: ClientEntryFormProps) {
   const supabase = createClient()
 
   const [activeTab, setActiveTab] = useState("tyfcb")
@@ -39,7 +40,8 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId }
 
   const [tyfcbForm, setTyfcbForm] = useState({
     chapter_id: defaultChapterId ?? null,
-    user_name: "",
+    user_id: currentUser?.id ?? null,
+    user_name: currentUser?.name ?? currentUser?.email ?? "",
     thank_you_to: "",
     amount: "",
     business_type: "",
@@ -49,7 +51,8 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId }
 
   const [referralForm, setReferralForm] = useState({
     chapter_id: defaultChapterId ?? null,
-    user_name: "",
+    user_id: currentUser?.id ?? null,
+    user_name: currentUser?.name ?? currentUser?.email ?? "",
     referred_to: "",
     referral_type: null as string | null,
     referral_status: null as string | null,
@@ -61,7 +64,8 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId }
 
   const [oneAndOneForm, setOneAndOneForm] = useState({
     chapter_id: defaultChapterId ?? null,
-    user_name: "",
+    user_id: currentUser?.id ?? null,
+    user_name: currentUser?.name ?? currentUser?.email ?? "",
     met_with: "",
     initiated_by: "",
     where_did_you_meet: "",
@@ -70,9 +74,9 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId }
   })
 
   const resetForms = () => {
-    setTyfcbForm({ chapter_id: defaultChapterId ?? null, user_name: "", thank_you_to: "", amount: "", business_type: "", referral_type: null, comments: "" })
-    setReferralForm({ chapter_id: defaultChapterId ?? null, user_name: "", referred_to: "", referral_type: null, referral_status: null, referral: "", telephone: "", email: "", address: "" })
-    setOneAndOneForm({ chapter_id: defaultChapterId ?? null, user_name: "", met_with: "", initiated_by: "", where_did_you_meet: "", date: "", topics_of_conversation: "" })
+    setTyfcbForm({ chapter_id: defaultChapterId ?? null, user_id: currentUser?.id ?? null, user_name: currentUser?.name ?? currentUser?.email ?? "", thank_you_to: "", amount: "", business_type: "", referral_type: null, comments: "" })
+    setReferralForm({ chapter_id: defaultChapterId ?? null, user_id: currentUser?.id ?? null, user_name: currentUser?.name ?? currentUser?.email ?? "", referred_to: "", referral_type: null, referral_status: null, referral: "", telephone: "", email: "", address: "" })
+    setOneAndOneForm({ chapter_id: defaultChapterId ?? null, user_id: currentUser?.id ?? null, user_name: currentUser?.name ?? currentUser?.email ?? "", met_with: "", initiated_by: "", where_did_you_meet: "", date: "", topics_of_conversation: "" })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -83,6 +87,7 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId }
       if (activeTab === "tyfcb" && tyfcbForm.chapter_id) {
         await supabase.from("tyfcbs").insert({
           chapter_id: tyfcbForm.chapter_id,
+          user_id: tyfcbForm.user_id,
           user_name: tyfcbForm.user_name,
           thank_you_to: tyfcbForm.thank_you_to,
           amount: tyfcbForm.amount,
@@ -93,6 +98,7 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId }
       } else if (activeTab === "referral" && referralForm.chapter_id) {
         await supabase.from("referrals").insert({
           chapter_id: referralForm.chapter_id,
+          user_id: referralForm.user_id,
           user_name: referralForm.user_name,
           referred_to: referralForm.referred_to,
           referral_type: referralForm.referral_type ?? "",
@@ -105,6 +111,7 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId }
       } else if (activeTab === "one-and-one" && oneAndOneForm.chapter_id) {
         await supabase.from("one_and_ones").insert({
           chapter_id: oneAndOneForm.chapter_id,
+          user_id: oneAndOneForm.user_id,
           user_name: oneAndOneForm.user_name,
           met_with: oneAndOneForm.met_with,
           initiated_by: oneAndOneForm.initiated_by,
@@ -205,7 +212,8 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId }
                   <CardContent className="grid gap-4">
                     <div className="grid gap-2">
                       <Label>User Name</Label>
-                      <Input value={tyfcbForm.user_name} onChange={(e) => setTyfcbForm({ ...tyfcbForm, user_name: e.target.value })} placeholder="Your name" />
+                      <Input value={tyfcbForm.user_name} readOnly className="bg-muted" title="Auto-filled from your account" />
+                      <input type="hidden" value={tyfcbForm.user_id ?? ""} />
                     </div>
                     <div className="grid gap-2">
                       <Label>Thank you to</Label>
@@ -249,7 +257,8 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId }
                   <CardContent className="grid gap-4">
                     <div className="grid gap-2">
                       <Label>User Name</Label>
-                      <Input value={referralForm.user_name} onChange={(e) => setReferralForm({ ...referralForm, user_name: e.target.value })} placeholder="Your name" />
+                      <Input value={referralForm.user_name} readOnly className="bg-muted" title="Auto-filled from your account" />
+                      <input type="hidden" value={referralForm.user_id ?? ""} />
                     </div>
                     <div className="grid gap-2">
                       <Label>To</Label>
@@ -310,7 +319,8 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId }
                   <CardContent className="grid gap-4">
                     <div className="grid gap-2">
                       <Label>User Name</Label>
-                      <Input value={oneAndOneForm.user_name} onChange={(e) => setOneAndOneForm({ ...oneAndOneForm, user_name: e.target.value })} placeholder="Your name" />
+                      <Input value={oneAndOneForm.user_name} readOnly className="bg-muted" title="Auto-filled from your account" />
+                      <input type="hidden" value={oneAndOneForm.user_id ?? ""} />
                     </div>
                     <div className="grid gap-2">
                       <Label>Met With</Label>

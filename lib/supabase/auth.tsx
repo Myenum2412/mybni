@@ -78,11 +78,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = useCallback(async () => {
     try {
-      const { data: { session: currentSession } } = await supabase.auth.getSession()
-      setSession(currentSession ?? null)
+      const { data: { user } } = await supabase.auth.getUser()
+      const currentSession = user ? { user } : null
+      setSession(currentSession as Session | null)
 
-      if (currentSession?.user) {
-        await fetchUserProfile(currentSession.user.id, currentSession.user.email ?? "")
+      if (user) {
+        await fetchUserProfile(user.id, user.email ?? "")
       } else {
         setUser(null)
       }
