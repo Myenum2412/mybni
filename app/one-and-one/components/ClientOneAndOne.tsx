@@ -34,9 +34,10 @@ import type { OneAndOne } from "@/lib/supabase/database.types"
 
 interface ClientOneAndOneProps {
   oneAndOnes: (OneAndOne & { chapters?: { name?: string } })[]
+  userRole?: string | null
 }
 
-export default function ClientOneAndOne({ oneAndOnes }: ClientOneAndOneProps) {
+export default function ClientOneAndOne({ oneAndOnes, userRole }: ClientOneAndOneProps) {
   return (
     <SidebarProvider>
       <AppSidebar />

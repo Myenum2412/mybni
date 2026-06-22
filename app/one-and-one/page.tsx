@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { getServerOneAndOnes } from "@/lib/supabase/server-data"
+import { getServerOneAndOnes, getServerUser, getServerProfile } from "@/lib/supabase/server-data"
 import ClientOneAndOne from "./components/ClientOneAndOne"
 
 export const metadata: Metadata = {
@@ -7,6 +7,18 @@ export const metadata: Metadata = {
 }
 
 export default async function OneAndOnePage() {
-  const oneAndOnes = await getServerOneAndOnes()
-  return <ClientOneAndOne oneAndOnes={oneAndOnes} />
+  const currentUser = await getServerUser()
+  let chapterId: number | null = null
+  let userRole: string | null = null
+
+  if (currentUser) {
+    const profile = await getServerProfile(currentUser.id)
+    userRole = profile?.role ?? null
+    chapterId = profile?.chapter_id ?? null
+  }
+
+  const scope = userRole === "admin" ? chapterId : null
+  const oneAndOnes = await getServerOneAndOnes(scope)
+
+  return <ClientOneAndOne oneAndOnes={oneAndOnes} userRole={userRole} />
 }

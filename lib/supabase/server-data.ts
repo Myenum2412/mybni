@@ -27,40 +27,47 @@ export async function getServerChapters() {
   return data ?? []
 }
 
-export async function getServerTyfcbs() {
+export async function getServerTyfcbs(chapterId?: number | null) {
   const supabase = await createClient()
-  const { data } = await supabase
-    .from("tyfcbs")
-    .select("*, chapters(name)")
-    .order("created_at", { ascending: false })
+  let query = supabase.from("tyfcbs").select("*, chapters(name)").order("created_at", { ascending: false })
+  if (chapterId) query = query.eq("chapter_id", chapterId)
+  const { data } = await query
   return data ?? []
 }
 
-export async function getServerReferrals() {
+export async function getServerReferrals(chapterId?: number | null) {
   const supabase = await createClient()
-  const { data } = await supabase
-    .from("referrals")
-    .select("*, chapters(name)")
-    .order("created_at", { ascending: false })
+  let query = supabase.from("referrals").select("*, chapters(name)").order("created_at", { ascending: false })
+  if (chapterId) query = query.eq("chapter_id", chapterId)
+  const { data } = await query
   return data ?? []
 }
 
-export async function getServerOneAndOnes() {
+export async function getServerOneAndOnes(chapterId?: number | null) {
   const supabase = await createClient()
-  const { data } = await supabase
-    .from("one_and_ones")
-    .select("*, chapters(name)")
-    .order("created_at", { ascending: false })
+  let query = supabase.from("one_and_ones").select("*, chapters(name)").order("created_at", { ascending: false })
+  if (chapterId) query = query.eq("chapter_id", chapterId)
+  const { data } = await query
   return data ?? []
 }
 
-export async function getServerRecentActivity() {
+export async function getServerRecentActivity(chapterId?: number | null) {
   const supabase = await createClient()
+
+  let tyfcbsQ = supabase.from("tyfcbs").select("*").order("created_at", { ascending: false }).limit(5)
+  let referralsQ = supabase.from("referrals").select("*").order("created_at", { ascending: false }).limit(5)
+  let oneAndOnesQ = supabase.from("one_and_ones").select("*").order("created_at", { ascending: false }).limit(5)
+
+  if (chapterId) {
+    tyfcbsQ = tyfcbsQ.eq("chapter_id", chapterId)
+    referralsQ = referralsQ.eq("chapter_id", chapterId)
+    oneAndOnesQ = oneAndOnesQ.eq("chapter_id", chapterId)
+  }
 
   const [tyfcbsResult, referralsResult, oneAndOnesResult] = await Promise.all([
-    supabase.from("tyfcbs").select("*").order("created_at", { ascending: false }).limit(5),
-    supabase.from("referrals").select("*").order("created_at", { ascending: false }).limit(5),
-    supabase.from("one_and_ones").select("*").order("created_at", { ascending: false }).limit(5),
+    tyfcbsQ,
+    referralsQ,
+    oneAndOnesQ,
   ])
 
   const allActivities: { id: number; type: string; member: string; detail: string; status: string; date: string; created_at: string }[] = []
@@ -148,13 +155,23 @@ export async function getServerChapterMembers(chapterId: number) {
   return Array.from(names).sort()
 }
 
-export async function getServerDashboardStats() {
+export async function getServerDashboardStats(chapterId?: number | null) {
   const supabase = await createClient()
 
+  let tyfcbsQuery = supabase.from("tyfcbs").select("amount")
+  let referralsQuery = supabase.from("referrals").select("id", { count: "exact", head: true }).neq("referral_status", "Closed")
+  let meetingsQuery = supabase.from("one_and_ones").select("id", { count: "exact", head: true })
+
+  if (chapterId) {
+    tyfcbsQuery = tyfcbsQuery.eq("chapter_id", chapterId)
+    referralsQuery = referralsQuery.eq("chapter_id", chapterId)
+    meetingsQuery = meetingsQuery.eq("chapter_id", chapterId)
+  }
+
   const [tyfcbsResult, referralsResult, meetingsResult] = await Promise.all([
-    supabase.from("tyfcbs").select("amount"),
-    supabase.from("referrals").select("id", { count: "exact", head: true }).neq("referral_status", "Closed"),
-    supabase.from("one_and_ones").select("id", { count: "exact", head: true }),
+    tyfcbsQuery,
+    referralsQuery,
+    meetingsQuery,
   ])
 
   let totalRevenue = 0

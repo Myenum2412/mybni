@@ -9,6 +9,29 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      users: {
+        Row: {
+          id: string
+          email: string
+          role: string
+          chapter_id: number | null
+          created_at: string
+        }
+        Insert: {
+          id: string
+          email: string
+          role?: string
+          chapter_id?: number | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          email?: string
+          role?: string
+          chapter_id?: number | null
+          created_at?: string
+        }
+      }
       chapters: {
         Row: {
           id: number
@@ -194,6 +217,7 @@ export type TablesInsert<T extends keyof Database['public']['Tables']> =
 export type TablesUpdate<T extends keyof Database['public']['Tables']> =
   Database['public']['Tables'][T]['Update']
 
+export type User = Tables<'users'>
 export type Chapter = Tables<'chapters'>
 export type Tyfcb = Tables<'tyfcbs'>
 export type Referral = Tables<'referrals'>

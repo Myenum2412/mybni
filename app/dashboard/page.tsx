@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { getServerDashboardStats, getServerRecentActivity, getServerUser, getServerProfile, getServerChapters } from "@/lib/supabase/server-data"
+import { getServerDashboardStats, getServerRecentActivity, getServerUser, getServerProfile } from "@/lib/supabase/server-data"
 import ClientDashboard from "./components/ClientDashboard"
 
 export const metadata: Metadata = {
@@ -7,34 +7,28 @@ export const metadata: Metadata = {
 }
 
 export default async function DashboardPage() {
-  const [stats, activities, currentUser] = await Promise.all([
-    getServerDashboardStats(),
-    getServerRecentActivity(),
-    getServerUser(),
-  ])
-
+  const currentUser = await getServerUser()
   let userRole: string | null = null
   let userChapterId: number | null = null
+
   if (currentUser) {
     const profile = await getServerProfile(currentUser.id)
     userRole = profile?.role ?? null
     userChapterId = profile?.chapter_id ?? null
   }
 
-  // Filter activities for admin role — show only their chapter
-  let filteredActivities = activities
-  if (userRole === "admin" && userChapterId) {
-    const chapters = await getServerChapters()
-    const chapter = chapters.find((c) => c.id === userChapterId)
-    if (chapter) {
-      filteredActivities = activities.filter((a) => a.detail?.includes(chapter.name))
-    }
-  }
+  // Chapter-admin scoped data
+  const chapterScope = userRole === "admin" ? userChapterId : null
+
+  const [stats, activities] = await Promise.all([
+    getServerDashboardStats(chapterScope),
+    getServerRecentActivity(chapterScope),
+  ])
 
   return (
     <ClientDashboard
       stats={stats}
-      activities={filteredActivities}
+      activities={activities}
       userRole={userRole}
     />
   )

@@ -35,9 +35,10 @@ import type { Referral } from "@/lib/supabase/database.types"
 
 interface ClientReferralSlipProps {
   referrals: (Referral & { chapters?: { name?: string } })[]
+  userRole?: string | null
 }
 
-export default function ClientReferralSlip({ referrals }: ClientReferralSlipProps) {
+export default function ClientReferralSlip({ referrals, userRole }: ClientReferralSlipProps) {
   return (
     <SidebarProvider>
       <AppSidebar />

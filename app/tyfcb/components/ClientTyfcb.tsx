@@ -34,9 +34,10 @@ import type { Tyfcb } from "@/lib/supabase/database.types"
 
 interface ClientTyfcbProps {
   tyfcbs: (Tyfcb & { chapters?: { name?: string } })[]
+  userRole?: string | null
 }
 
-export default function ClientTyfcb({ tyfcbs }: ClientTyfcbProps) {
+export default function ClientTyfcb({ tyfcbs, userRole }: ClientTyfcbProps) {
   return (
     <SidebarProvider>
       <AppSidebar />

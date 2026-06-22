@@ -26,9 +26,11 @@ import type { Chapter } from "@/lib/supabase/database.types"
 
 interface ClientEntryFormProps {
   chapters: Chapter[]
+  userRole?: string | null
+  defaultChapterId?: number | null
 }
 
-export default function ClientEntryForm({ chapters }: ClientEntryFormProps) {
+export default function ClientEntryForm({ chapters, userRole, defaultChapterId }: ClientEntryFormProps) {
   const supabase = createClient()
 
   const [activeTab, setActiveTab] = useState("tyfcb")
@@ -36,7 +38,7 @@ export default function ClientEntryForm({ chapters }: ClientEntryFormProps) {
   const [submitting, setSubmitting] = useState(false)
 
   const [tyfcbForm, setTyfcbForm] = useState({
-    chapter_id: null as number | null,
+    chapter_id: defaultChapterId ?? null,
     user_name: "",
     thank_you_to: "",
     amount: "",
@@ -46,7 +48,7 @@ export default function ClientEntryForm({ chapters }: ClientEntryFormProps) {
   })
 
   const [referralForm, setReferralForm] = useState({
-    chapter_id: null as number | null,
+    chapter_id: defaultChapterId ?? null,
     user_name: "",
     referred_to: "",
     referral_type: null as string | null,
@@ -58,7 +60,7 @@ export default function ClientEntryForm({ chapters }: ClientEntryFormProps) {
   })
 
   const [oneAndOneForm, setOneAndOneForm] = useState({
-    chapter_id: null as number | null,
+    chapter_id: defaultChapterId ?? null,
     user_name: "",
     met_with: "",
     initiated_by: "",
@@ -68,9 +70,9 @@ export default function ClientEntryForm({ chapters }: ClientEntryFormProps) {
   })
 
   const resetForms = () => {
-    setTyfcbForm({ chapter_id: null, user_name: "", thank_you_to: "", amount: "", business_type: "", referral_type: null, comments: "" })
-    setReferralForm({ chapter_id: null, user_name: "", referred_to: "", referral_type: null, referral_status: null, referral: "", telephone: "", email: "", address: "" })
-    setOneAndOneForm({ chapter_id: null, user_name: "", met_with: "", initiated_by: "", where_did_you_meet: "", date: "", topics_of_conversation: "" })
+    setTyfcbForm({ chapter_id: defaultChapterId ?? null, user_name: "", thank_you_to: "", amount: "", business_type: "", referral_type: null, comments: "" })
+    setReferralForm({ chapter_id: defaultChapterId ?? null, user_name: "", referred_to: "", referral_type: null, referral_status: null, referral: "", telephone: "", email: "", address: "" })
+    setOneAndOneForm({ chapter_id: defaultChapterId ?? null, user_name: "", met_with: "", initiated_by: "", where_did_you_meet: "", date: "", topics_of_conversation: "" })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -157,39 +159,41 @@ export default function ClientEntryForm({ chapters }: ClientEntryFormProps) {
                 <TabsTrigger value="one-and-one">1 & 1</TabsTrigger>
               </TabsList>
 
-              {/* Shared Chapter Select */}
-              <Card className="mb-6">
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base">Chapter</CardTitle>
-                  <CardDescription>Select your BNI chapter</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {activeTab === "tyfcb" && (
-                    <Select value={tyfcbForm.chapter_id?.toString() ?? null} onValueChange={(v) => setTyfcbForm({ ...tyfcbForm, chapter_id: Number(v) })}>
-                      <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
-                      <SelectContent>
-                        {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                  {activeTab === "referral" && (
-                    <Select value={referralForm.chapter_id?.toString() ?? null} onValueChange={(v) => setReferralForm({ ...referralForm, chapter_id: Number(v) })}>
-                      <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
-                      <SelectContent>
-                        {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                  {activeTab === "one-and-one" && (
-                    <Select value={oneAndOneForm.chapter_id?.toString() ?? null} onValueChange={(v) => setOneAndOneForm({ ...oneAndOneForm, chapter_id: Number(v) })}>
-                      <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
-                      <SelectContent>
-                        {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                </CardContent>
-              </Card>
+              {/* Shared Chapter Select — hidden for admin (auto-assigned) */}
+              {userRole !== "admin" && (
+                <Card className="mb-6">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">Chapter</CardTitle>
+                    <CardDescription>Select your BNI chapter</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {activeTab === "tyfcb" && (
+                      <Select value={tyfcbForm.chapter_id?.toString() ?? ""} onValueChange={(v) => setTyfcbForm({ ...tyfcbForm, chapter_id: Number(v) })}>
+                        <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                        <SelectContent>
+                          {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                    {activeTab === "referral" && (
+                      <Select value={referralForm.chapter_id?.toString() ?? ""} onValueChange={(v) => setReferralForm({ ...referralForm, chapter_id: Number(v) })}>
+                        <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                        <SelectContent>
+                          {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                    {activeTab === "one-and-one" && (
+                      <Select value={oneAndOneForm.chapter_id?.toString() ?? ""} onValueChange={(v) => setOneAndOneForm({ ...oneAndOneForm, chapter_id: Number(v) })}>
+                        <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                        <SelectContent>
+                          {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
+                        </SelectContent>
+                      </Select>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
 
               {/* TYFCB Tab */}
               <TabsContent value="tyfcb">

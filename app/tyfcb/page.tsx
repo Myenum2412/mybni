@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { getServerTyfcbs } from "@/lib/supabase/server-data"
+import { getServerTyfcbs, getServerUser, getServerProfile } from "@/lib/supabase/server-data"
 import ClientTyfcb from "./components/ClientTyfcb"
 
 export const metadata: Metadata = {
@@ -7,6 +7,19 @@ export const metadata: Metadata = {
 }
 
 export default async function TYFCBPage() {
-  const tyfcbs = await getServerTyfcbs()
-  return <ClientTyfcb tyfcbs={tyfcbs} />
+  const currentUser = await getServerUser()
+  let chapterId: number | null = null
+  let userRole: string | null = null
+
+  if (currentUser) {
+    const profile = await getServerProfile(currentUser.id)
+    userRole = profile?.role ?? null
+    chapterId = profile?.chapter_id ?? null
+  }
+
+  // Admin sees only their chapter; superadmin sees all
+  const scope = userRole === "admin" ? chapterId : null
+  const tyfcbs = await getServerTyfcbs(scope)
+
+  return <ClientTyfcb tyfcbs={tyfcbs} userRole={userRole} />
 }
