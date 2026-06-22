@@ -38,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
 import { UsersIcon } from "lucide-react"
 import type { Tyfcb, Referral, OneAndOne, Chapter } from "@/lib/supabase/database.types"
 
