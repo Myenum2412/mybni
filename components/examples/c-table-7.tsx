@@ -21,7 +21,7 @@ const orders = [
     email: "olivia@example.com",
     avatar:
       "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=96&h=96&dpr=2&q=80",
-    amount: "$1,999.00",
+    amount: "₹1,999.00",
     status: "Paid",
     statusVariant: "success" as const,
     date: "Feb 1, 2025",
@@ -32,7 +32,7 @@ const orders = [
     email: "jackson@example.com",
     avatar:
       "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=96&h=96&dpr=2&q=80",
-    amount: "$39.00",
+    amount: "₹39.00",
     status: "Pending",
     statusVariant: "warning" as const,
     date: "Jan 28, 2025",
@@ -43,7 +43,7 @@ const orders = [
     email: "isabella@example.com",
     avatar:
       "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=96&h=96&dpr=2&q=80",
-    amount: "$299.00",
+    amount: "₹299.00",
     status: "Paid",
     statusVariant: "success" as const,
     date: "Jan 25, 2025",
@@ -54,7 +54,7 @@ const orders = [
     email: "will@example.com",
     avatar:
       "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=96&h=96&dpr=2&q=80",
-    amount: "$99.00",
+    amount: "₹99.00",
     status: "Refunded",
     statusVariant: "destructive-light" as const,
     date: "Jan 22, 2025",
@@ -65,7 +65,7 @@ const orders = [
     email: "sofia@example.com",
     avatar:
       "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=96&h=96&dpr=2&q=80",
-    amount: "$2,500.00",
+    amount: "₹2,500.00",
     status: "Paid",
     statusVariant: "success" as const,
     date: "Jan 18, 2025",

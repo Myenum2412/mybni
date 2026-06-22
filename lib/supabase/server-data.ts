@@ -123,7 +123,7 @@ export async function getServerDashboardStats() {
   let totalRevenue = 0
   if (tyfcbsResult.data) {
     tyfcbsResult.data.forEach((t) => {
-      const amount = parseFloat((t.amount || "0").replace(/[$,]/g, ""))
+      const amount = parseFloat((t.amount || "0").replace(/[₹,]/g, ""))
       if (!isNaN(amount)) totalRevenue += amount
     })
   }
@@ -132,6 +132,6 @@ export async function getServerDashboardStats() {
     totalTyfcbs: tyfcbsResult.data?.length ?? 0,
     activeReferrals: referralsResult.count ?? 0,
     totalMeetings: meetingsResult.count ?? 0,
-    totalRevenue: `$${totalRevenue.toLocaleString()}`,
+    totalRevenue: `₹${totalRevenue.toLocaleString()}`,
   }
 }

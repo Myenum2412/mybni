@@ -86,35 +86,3 @@ CREATE POLICY "Allow all access on chapters" ON public.chapters FOR ALL USING (t
 CREATE POLICY "Allow all access on tyfcbs" ON public.tyfcbs FOR ALL USING (true);
 CREATE POLICY "Allow all access on referrals" ON public.referrals FOR ALL USING (true);
 CREATE POLICY "Allow all access on one_and_ones" ON public.one_and_ones FOR ALL USING (true);
-
--- Insert sample chapters
-INSERT INTO public.chapters (name, region, meeting_day, meeting_time, location, president, members) VALUES
-  ('BNI Victory', 'North', 'Tuesday', '7:00 AM', 'Hotel Grand Palace', 'Rahul Sharma', 32),
-  ('BNI Prosperity', 'South', 'Wednesday', '7:30 AM', 'Business Hub Center', 'Priya Patel', 28),
-  ('BNI Synergy', 'East', 'Thursday', '7:00 AM', 'Tech Park Auditorium', 'Amit Kumar', 35),
-  ('BNI Elevate', 'West', 'Friday', '8:00 AM', 'City Convention Hall', 'Sneha Reddy', 24),
-  ('BNI Catalyst', 'Central', 'Monday', '7:00 AM', 'Downtown Business Club', 'Vikram Singh', 30);
-
--- Insert sample TYFCBs
-INSERT INTO public.tyfcbs (chapter_id, user_name, thank_you_to, amount, business_type, referral_type, comments) VALUES
-  (1, 'John Smith', 'Alice Johnson', '$5,000', 'Real Estate', 'Direct', 'Closed deal on downtown property'),
-  (2, 'Sarah Williams', 'Bob Miller', '$2,500', 'Insurance', 'Indirect', 'Annual policy renewal'),
-  (3, 'Mike Davis', 'Carol White', '$10,000', 'Construction', 'Direct', 'Commercial building project'),
-  (4, 'Emily Brown', 'David Wilson', '$1,200', 'Legal', 'Direct', 'Contract review services'),
-  (5, 'James Taylor', 'Emma Moore', '$7,800', 'Accounting', 'Indirect', 'Tax consultation referral');
-
--- Insert sample Referrals
-INSERT INTO public.referrals (chapter_id, user_name, referred_to, referral_type, referral_status, referral, telephone, email, address) VALUES
-  (1, 'John Smith', 'Alice Johnson', 'Direct', 'Closed', 'Real Estate Deal', '(555) 123-4567', 'alice@example.com', '123 Main St, New York, NY'),
-  (2, 'Sarah Williams', 'Bob Miller', 'Indirect', 'Pending', 'Insurance Policy', '(555) 234-5678', 'bob@example.com', '456 Oak Ave, Los Angeles, CA'),
-  (3, 'Mike Davis', 'Carol White', 'Direct', 'Closed', 'Construction Project', '(555) 345-6789', 'carol@example.com', '789 Pine Rd, Chicago, IL'),
-  (4, 'Emily Brown', 'David Wilson', 'Direct', 'In Progress', 'Legal Services', '(555) 456-7890', 'david@example.com', '321 Elm St, Houston, TX'),
-  (5, 'James Taylor', 'Emma Moore', 'Indirect', 'Pending', 'Accounting Services', '(555) 567-8901', 'emma@example.com', '654 Maple Dr, Phoenix, AZ');
-
--- Insert sample 1 & 1s
-INSERT INTO public.one_and_ones (chapter_id, user_name, met_with, initiated_by, where_did_you_meet, date, topics_of_conversation) VALUES
-  (1, 'John Smith', 'Alice Johnson', 'John Smith', 'Coffee Shop', '2025-01-15', 'Real estate referrals, upcoming projects'),
-  (2, 'Sarah Williams', 'Bob Miller', 'Bob Miller', 'BNI Chapter Meeting', '2025-01-18', 'Insurance cross-referrals, client needs'),
-  (3, 'Mike Davis', 'Carol White', 'Mike Davis', 'Restaurant', '2025-01-22', 'Construction project pipeline, vendor intro'),
-  (4, 'Emily Brown', 'David Wilson', 'Emily Brown', 'Office', '2025-01-25', 'Legal service packages, referral process'),
-  (5, 'James Taylor', 'Emma Moore', 'Emma Moore', 'Networking Event', '2025-01-28', 'Accounting needs, tax season prep');

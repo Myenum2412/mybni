@@ -248,7 +248,7 @@ export function useDashboardStats() {
     totalTyfcbs: 0,
     activeReferrals: 0,
     totalMeetings: 0,
-    totalRevenue: "$0",
+    totalRevenue: "₹0",
   })
   const [loading, setLoading] = useState(true)
   const supabase = createClient()
@@ -266,7 +266,7 @@ export function useDashboardStats() {
     let totalRevenue = 0
     if (tyfcbsResult.data) {
       tyfcbsResult.data.forEach((t) => {
-        const amount = parseFloat((t.amount || "0").replace(/[$,]/g, ""))
+        const amount = parseFloat((t.amount || "0").replace(/[₹,]/g, ""))
         if (!isNaN(amount)) totalRevenue += amount
       })
     }
@@ -275,7 +275,7 @@ export function useDashboardStats() {
       totalTyfcbs: tyfcbsResult.count || 0,
       activeReferrals: referralsResult.count || 0,
       totalMeetings: meetingsResult.count || 0,
-      totalRevenue: `$${totalRevenue.toLocaleString()}`,
+      totalRevenue: `₹${totalRevenue.toLocaleString()}`,
     })
     setLoading(false)
   }, [supabase])
