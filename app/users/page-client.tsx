@@ -1,13 +1,6 @@
 "use client"
 
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Users",
-}
-
 import { useState, useMemo, useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -39,15 +32,27 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { useChapters, useTyfcbs, useReferrals, useOneAndOnes } from "@/lib/supabase/hooks"
 import { useAuth } from "@/lib/supabase/auth"
-import { UsersIcon } from "lucide-react"
+import { UsersIcon, PlusIcon, EyeIcon, EyeOffIcon, Loader2Icon } from "lucide-react"
 
 interface UserEntry {
   id: number
@@ -60,7 +65,6 @@ interface UserEntry {
 
 export default function UsersPage() {
   const { user, loading: authLoading } = useAuth()
-  const router = useRouter()
   const { chapters } = useChapters()
   const { tyfcbs } = useTyfcbs()
   const { referrals } = useReferrals()
@@ -68,7 +72,6 @@ export default function UsersPage() {
 
   const isAdmin = user?.role === "admin" || user?.role === "superadmin"
 
-  // For non-admin users, auto-filter to their chapter
   const userChapterName = useMemo(() => {
     if (!user?.chapter_id) return null
     const chapter = chapters.find((c) => c.id === user.chapter_id)
@@ -77,23 +80,26 @@ export default function UsersPage() {
 
   const [selectedChapter, setSelectedChapter] = useState<string>("all")
 
-  // Reset filter when user/chapter changes
+  // Create user form state
+  const [showCreateForm, setShowCreateForm] = useState(false)
+  const [newUserName, setNewUserName] = useState("")
+  const [newUserEmail, setNewUserEmail] = useState("")
+  const [newUserPassword, setNewUserPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
+  const [newUserChapterId, setNewUserChapterId] = useState<string>("")
+  const [newUserRole, setNewUserRole] = useState<string>("member")
+  const [creating, setCreating] = useState(false)
+  const [createError, setCreateError] = useState<string | null>(null)
+  const [createSuccess, setCreateSuccess] = useState(false)
+
   useEffect(() => {
     if (!isAdmin && userChapterName) {
       setSelectedChapter(userChapterName)
     }
   }, [isAdmin, userChapterName])
 
-  // Redirect non-admin users away if they try to access without a chapter
-  useEffect(() => {
-    if (!authLoading && !isAdmin && !userChapterName && chapters.length > 0) {
-      // Non-admin without a chapter assignment — still allow access but show empty
-    }
-  }, [authLoading, isAdmin, userChapterName, chapters])
-
   const allEntries = useMemo(() => {
     const entries: UserEntry[] = []
-
     tyfcbs.forEach((t) => {
       entries.push({
         id: t.id,
@@ -104,7 +110,6 @@ export default function UsersPage() {
         date: new Date(t.created_at).toISOString().split("T")[0],
       })
     })
-
     referrals.forEach((r) => {
       entries.push({
         id: r.id + 10000,
@@ -115,7 +120,6 @@ export default function UsersPage() {
         date: new Date(r.created_at).toISOString().split("T")[0],
       })
     })
-
     oneAndOnes.forEach((o) => {
       entries.push({
         id: o.id + 20000,
@@ -126,7 +130,6 @@ export default function UsersPage() {
         date: o.date,
       })
     })
-
     entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     return entries
   }, [tyfcbs, referrals, oneAndOnes])
@@ -136,13 +139,54 @@ export default function UsersPage() {
     return allEntries.filter((e) => e.chapterName === selectedChapter)
   }, [allEntries, selectedChapter])
 
-  const chapterNames = useMemo(() => {
-    const names = new Set<string>()
-    allEntries.forEach((e) => {
-      if (e.chapterName !== "—") names.add(e.chapterName)
-    })
-    return Array.from(names).sort()
-  }, [allEntries])
+  const resetCreateForm = () => {
+    setNewUserName("")
+    setNewUserEmail("")
+    setNewUserPassword("")
+    setNewUserChapterId("")
+    setNewUserRole("member")
+    setCreateError(null)
+    setCreateSuccess(false)
+  }
+
+  const handleCreateUser = async () => {
+    setCreateError(null)
+    setCreateSuccess(false)
+
+    if (!newUserName || !newUserEmail || !newUserPassword) {
+      setCreateError("Name, email, and password are required")
+      return
+    }
+
+    setCreating(true)
+    try {
+      const res = await fetch("/api/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newUserName,
+          email: newUserEmail,
+          password: newUserPassword,
+          chapterId: newUserChapterId || null,
+          role: newUserRole,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        setCreateError(data.error || "Failed to create user")
+      } else {
+        setCreateSuccess(true)
+        resetCreateForm()
+        setTimeout(() => setShowCreateForm(false), 1500)
+      }
+    } catch (err) {
+      setCreateError(String(err))
+    } finally {
+      setCreating(false)
+    }
+  }
 
   if (authLoading) {
     return (
@@ -174,11 +218,115 @@ export default function UsersPage() {
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-          <div>
-            <h1 className="text-2xl font-bold">Users</h1>
-            <p className="text-sm text-muted-foreground">
-              {isAdmin ? "Member activity across all chapters" : `Your chapter: ${userChapterName || "Not assigned"}`}
-            </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold">Users</h1>
+              <p className="text-sm text-muted-foreground">
+                {isAdmin ? "Manage members and view activity" : `Your chapter: ${userChapterName || "Not assigned"}`}
+              </p>
+            </div>
+            {isAdmin && (
+              <Dialog open={showCreateForm} onOpenChange={(open) => { setShowCreateForm(open); if (!open) resetCreateForm(); }}>
+                <DialogTrigger
+                  render={
+                    <Button className="bg-red-600 hover:bg-red-700">
+                      <PlusIcon className="mr-2 size-4" />
+                      Add User
+                    </Button>
+                  }
+                />
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Create New User</DialogTitle>
+                    <DialogDescription>Add a new member to the chapter</DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    {createError && (
+                      <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+                        {createError}
+                      </div>
+                    )}
+                    {createSuccess && (
+                      <div className="rounded-md bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-600">
+                        User created successfully!
+                      </div>
+                    )}
+                    <div className="grid gap-2">
+                      <Label htmlFor="new-name">Name</Label>
+                      <Input
+                        id="new-name"
+                        placeholder="John Smith"
+                        value={newUserName}
+                        onChange={(e) => setNewUserName(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="new-email">Email ID</Label>
+                      <Input
+                        id="new-email"
+                        type="email"
+                        placeholder="john@example.com"
+                        value={newUserEmail}
+                        onChange={(e) => setNewUserEmail(e.target.value)}
+                      />
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="new-password">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="new-password"
+                          type={showPassword ? "text" : "password"}
+                          placeholder="••••••••"
+                          value={newUserPassword}
+                          onChange={(e) => setNewUserPassword(e.target.value)}
+                          className="pr-10"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          tabIndex={-1}
+                        >
+                          {showPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="new-chapter">Chapter</Label>
+                      <Select value={newUserChapterId} onValueChange={(v) => setNewUserChapterId(v ?? "")}>
+                        <SelectTrigger id="new-chapter">
+                          <SelectValue placeholder="Select chapter" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {chapters.map((c) => (
+                            <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="new-role">Role</Label>
+                      <Select value={newUserRole} onValueChange={(v) => setNewUserRole(v ?? "member")}>
+                        <SelectTrigger id="new-role">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="member">Member</SelectItem>
+                          <SelectItem value="admin">Admin</SelectItem>
+                          <SelectItem value="superadmin">Super Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => { setShowCreateForm(false); resetCreateForm(); }}>Cancel</Button>
+                    <Button onClick={handleCreateUser} disabled={creating} className="bg-red-600 hover:bg-red-700">
+                      {creating ? <Loader2Icon className="mr-2 size-4 animate-spin" /> : "Create User"}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
 
           {/* Chapter Filter Card */}
