@@ -94,9 +94,10 @@ interface Activity {
 interface ClientDashboardProps {
   stats: DashboardStats
   activities: Activity[]
+  userRole?: string | null
 }
 
-export default function ClientDashboard({ stats, activities }: ClientDashboardProps) {
+export default function ClientDashboard({ stats, activities, userRole }: ClientDashboardProps) {
   return (
     <SidebarProvider>
       <AppSidebar />

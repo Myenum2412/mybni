@@ -137,7 +137,7 @@ export interface Database {
           chapter_id: number
           user_name: string
           met_with: string
-          initiated_by: string
+          initiated_by?: string
           where_did_you_meet: string
           date: string
           topics_of_conversation?: string | null
@@ -152,6 +152,32 @@ export interface Database {
           where_did_you_meet?: string
           date?: string
           topics_of_conversation?: string | null
+          created_at?: string
+        }
+      }
+      attendance: {
+        Row: {
+          id: number
+          chapter_id: number
+          member_name: string
+          date: string
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: number
+          chapter_id: number
+          member_name: string
+          date: string
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: number
+          chapter_id?: number
+          member_name?: string
+          date?: string
+          status?: string
           created_at?: string
         }
       }
@@ -172,6 +198,7 @@ export type Chapter = Tables<'chapters'>
 export type Tyfcb = Tables<'tyfcbs'>
 export type Referral = Tables<'referrals'>
 export type OneAndOne = Tables<'one_and_ones'>
+export type Attendance = Tables<'attendance'>
 
 export type TyfcbInsert = TablesInsert<'tyfcbs'>
 export type ReferralInsert = TablesInsert<'referrals'>

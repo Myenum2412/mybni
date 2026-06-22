@@ -19,3 +19,12 @@
 
 ## 2026-06-22T03:12:55Z [cb85d82d-598]
 📁 `/root/mybni/app/api/migrate/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-22T05:23:36Z [9cdf4861-22c]
+📁 `/root/mybni/app/api/attendance/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-22T05:25:56Z [9cdf4861-22c]
+📁 `/root/mybni/app/api/chapter-members/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-22T05:26:19Z [9cdf4861-22c]
+📁 `/root/mybni/app/api/attendance/route.ts` が変更されました: パターン 'api/' にマッチ

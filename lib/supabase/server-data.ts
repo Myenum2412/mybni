@@ -111,6 +111,43 @@ export async function getServerRecentActivity() {
   return allActivities.slice(0, 10).map(({ created_at: _created_at, ...rest }) => rest)
 }
 
+export async function getServerAttendance(chapterId: number, date: string) {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from("attendance")
+    .select("*")
+    .eq("chapter_id", chapterId)
+    .eq("date", date)
+  return data ?? []
+}
+
+export async function getServerChapterMembers(chapterId: number) {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from("tyfcbs")
+    .select("user_name")
+    .eq("chapter_id", chapterId)
+
+  const names = new Set<string>()
+  if (data) {
+    data.forEach((r) => {
+      if (r.user_name) names.add(r.user_name)
+    })
+  }
+
+  // Fallback: include chapter president if no TYFCB entries
+  if (names.size === 0) {
+    const { data: chapter } = await supabase
+      .from("chapters")
+      .select("president")
+      .eq("id", chapterId)
+      .single()
+    if (chapter?.president) names.add(chapter.president)
+  }
+
+  return Array.from(names).sort()
+}
+
 export async function getServerDashboardStats() {
   const supabase = await createClient()
 
