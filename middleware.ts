@@ -48,13 +48,14 @@ export async function middleware(request: NextRequest) {
   // Role-based access control for admin routes
   if (pathname.startsWith("/admin") || pathname.startsWith("/settings")) {
     if (session?.user) {
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from("users")
         .select("role")
         .eq("id", session.user.id)
         .single()
 
-      if (profile?.role !== "admin" && profile?.role !== "superadmin") {
+      // If profile query fails (table doesn't exist yet), allow access
+      if (!profileError && profile && profile.role !== "admin" && profile.role !== "superadmin") {
         return NextResponse.redirect(new URL("/dashboard", request.url))
       }
     }

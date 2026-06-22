@@ -20,12 +20,12 @@ export default async function AdminPage() {
 
   let userRole: string | null = null
   if (session?.user) {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("users")
       .select("role")
       .eq("id", session.user.id)
       .single()
-    userRole = data?.role ?? null
+    if (!error) userRole = data?.role ?? null
   }
 
   return (
