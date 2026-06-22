@@ -201,7 +201,7 @@ export default function ClientSettings({ chapters: initialChapters }: ClientSett
                   <div className="grid gap-4 py-4">
                     <div className="grid gap-2">
                       <Label htmlFor="name">Chapter Name</Label>
-                      <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="BNI Victory" />
+                      <Input id="name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Enter chapter name" />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="region">Region</Label>
@@ -236,20 +236,20 @@ export default function ClientSettings({ chapters: initialChapters }: ClientSett
                       </div>
                       <div className="grid gap-2">
                         <Label htmlFor="meetingTime">Meeting Time</Label>
-                        <Input id="meetingTime" value={formData.meeting_time} onChange={(e) => setFormData({ ...formData, meeting_time: e.target.value })} placeholder="7:00 AM" />
+                        <Input id="meetingTime" value={formData.meeting_time} onChange={(e) => setFormData({ ...formData, meeting_time: e.target.value })} placeholder="e.g. 7:00 AM" />
                       </div>
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="location">Location</Label>
-                      <Input id="location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="Hotel Grand Palace" />
+                      <Input id="location" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} placeholder="Enter location" />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="president">President</Label>
-                      <Input id="president" value={formData.president} onChange={(e) => setFormData({ ...formData, president: e.target.value })} placeholder="Rahul Sharma" />
+                      <Input id="president" value={formData.president} onChange={(e) => setFormData({ ...formData, president: e.target.value })} placeholder="Enter president name" />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="members">Members</Label>
-                      <Input id="members" type="number" value={formData.members} onChange={(e) => setFormData({ ...formData, members: e.target.value })} placeholder="32" />
+                      <Input id="members" type="number" value={formData.members} onChange={(e) => setFormData({ ...formData, members: e.target.value })} placeholder="0" />
                     </div>
                   </div>
                   <DialogFooter>

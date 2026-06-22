@@ -262,7 +262,7 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
                       <Label htmlFor="new-name">Name</Label>
                       <Input
                         id="new-name"
-                        placeholder="John Smith"
+                        placeholder="Enter full name"
                         value={newUserName}
                         onChange={(e) => setNewUserName(e.target.value)}
                       />

@@ -335,3 +335,13 @@
 {"data":{"command":"cat /root/mybni/app/api/migrate/route.ts"},"id":"event-000335","state":"stopped","ts":"2026-06-22T03:12:18Z","type":"tool.bash"}
 {"data":{"file_path":"/root/mybni/app/api/migrate/route.ts"},"id":"event-000336","state":"stopped","ts":"2026-06-22T03:12:55Z","type":"tool.write"}
 {"data":{"command":"npx tsc --noEmit 2\u003e\u00261 \u0026\u0026 npm run build 2\u003e\u00261"},"id":"event-000337","state":"stopped","ts":"2026-06-22T03:13:29Z","type":"tool.bash"}
+{"data":{"command":"git add -A \u0026\u0026 git commit -m \"fix: replace $ with ₹, remove all fake sample data\n\n- All currency values now use ₹ (Indian Rupee) instead of $\n- Removed all fake sample data from SQL migration\n- Removed"},"id":"event-000338","state":"stopped","ts":"2026-06-22T03:13:44Z","type":"tool.bash"}
+{"data":{"command":"grep -rn \"John Smith\\|Alice Johnson\\|Bob Miller\\|Carol White\\|David Wilson\\|Emma Moore\\|Sarah Williams\\|Mike Davis\\|Emily Brown\\|James Taylor\\|Olivia Martin\\|Jackson Lee\\|Isabella Nguyen\\|William Kim\\"},"id":"event-000339","state":"stopped","ts":"2026-06-22T03:16:20Z","type":"tool.bash"}
+{"data":{"file_path":"/root/mybni/app/settings/components/ClientSettings.tsx"},"id":"event-000340","state":"stopped","ts":"2026-06-22T03:16:43Z","type":"tool.edit"}
+{"data":{"file_path":"/root/mybni/app/settings/components/ClientSettings.tsx"},"id":"event-000341","state":"stopped","ts":"2026-06-22T03:16:54Z","type":"tool.edit"}
+{"data":{"file_path":"/root/mybni/app/settings/components/ClientSettings.tsx"},"id":"event-000342","state":"stopped","ts":"2026-06-22T03:17:13Z","type":"tool.edit"}
+{"data":{"file_path":"/root/mybni/app/settings/components/ClientSettings.tsx"},"id":"event-000343","state":"stopped","ts":"2026-06-22T03:17:26Z","type":"tool.edit"}
+{"data":{"file_path":"/root/mybni/app/settings/components/ClientSettings.tsx"},"id":"event-000344","state":"stopped","ts":"2026-06-22T03:17:37Z","type":"tool.edit"}
+{"data":{"file_path":"/root/mybni/app/users/components/ClientUsers.tsx"},"id":"event-000345","state":"stopped","ts":"2026-06-22T03:17:48Z","type":"tool.edit"}
+{"data":{"command":"grep -rn 'placeholder=\".*\"' /root/mybni/app/entry-form/components/ClientEntryForm.tsx 2\u003e/dev/null"},"id":"event-000346","state":"stopped","ts":"2026-06-22T03:18:03Z","type":"tool.bash"}
+{"data":{"command":"npx tsc --noEmit 2\u003e\u00261 \u0026\u0026 npm run build 2\u003e\u00261"},"id":"event-000347","state":"stopped","ts":"2026-06-22T03:18:34Z","type":"tool.bash"}
