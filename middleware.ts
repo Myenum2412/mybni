@@ -1,8 +1,11 @@
 import { createServerClient } from "@supabase/ssr"
-import { NextResponse, type NextRequest } from "next/server"
+import { NextResponse, NextRequest } from "next/server"
 
 const publicPaths = ["/login", "/auth", "/api/migrate", "/api/users", "/entry-form"]
 const authPaths = ["/login", "/auth/callback"]
+
+// Paths admin role cannot access (superadmin-only)
+const adminBlockedPaths = ["/users", "/admin", "/settings", "/members"]
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -29,34 +32,44 @@ export async function middleware(request: NextRequest) {
   const { data: { session } } = await supabase.auth.getSession()
   const pathname = request.nextUrl.pathname
 
-  // Allow public paths
   const isPublic = publicPaths.some((p) => pathname.startsWith(p))
   const isAuthPath = authPaths.some((p) => pathname.startsWith(p))
 
-  // If user is not authenticated and trying to access protected route
+  // Unauthenticated → login
   if (!session && !isPublic) {
     const redirectUrl = new URL("/login", request.url)
     redirectUrl.searchParams.set("redirect", pathname)
     return NextResponse.redirect(redirectUrl)
   }
 
-  // If user is authenticated and trying to access login/auth pages, redirect to dashboard
+  // Authenticated on auth pages → dashboard
   if (session && isAuthPath) {
     return NextResponse.redirect(new URL("/dashboard", request.url))
   }
 
-  // Role-based access control for admin routes
-  if (pathname.startsWith("/admin") || pathname.startsWith("/settings")) {
-    if (session?.user) {
-      const { data: profile, error: profileError } = await supabase
-        .from("users")
-        .select("role")
-        .eq("id", session.user.id)
-        .single()
+  // Role-based route protection
+  if (session?.user) {
+    const { data: profile } = await supabase
+      .from("users")
+      .select("role")
+      .eq("id", session.user.id)
+      .single()
 
-      // If profile query fails (table doesn't exist yet), allow access
-      if (!profileError && profile && profile.role !== "admin" && profile.role !== "superadmin") {
+    const role = profile?.role ?? null
+
+    // Admin: block superadmin-only paths
+    if (role === "admin") {
+      if (adminBlockedPaths.some((p) => pathname.startsWith(p))) {
         return NextResponse.redirect(new URL("/dashboard", request.url))
+      }
+    }
+
+    // Member: only allow specific paths
+    if (role === "member") {
+      const allowedPaths = ["/dashboard", "/members", "/attendance", "/tyfcb", "/referral-slip", "/one-and-one", "/entry-form", "/api", "/settings"]
+      const isAllowed = allowedPaths.some((p) => pathname.startsWith(p))
+      if (!isAllowed) {
+        return NextResponse.redirect(new URL("/members", request.url))
       }
     }
   }

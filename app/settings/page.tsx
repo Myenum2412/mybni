@@ -25,5 +25,5 @@ export default async function SettingsPage() {
   // Redirect non-admins could be done here, but keeping consistent with client version
   void profile
 
-  return <ClientSettings chapters={chapters} />
+  return <ClientSettings chapters={chapters} userRole={profile?.role ?? null} />
 }

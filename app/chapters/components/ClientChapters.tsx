@@ -34,12 +34,13 @@ import type { Chapter } from "@/lib/supabase/database.types"
 
 interface ClientChaptersProps {
   chapters: Chapter[]
+  userRole?: string | null
 }
 
-export default function ClientChapters({ chapters }: ClientChaptersProps) {
+export default function ClientChapters({ chapters, userRole }: ClientChaptersProps) {
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar role={userRole} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

@@ -1,4 +1,3 @@
-import { createClient } from "@/lib/supabase/server"
 import { NavMain } from "@/components/nav-main"
 import { NavUser } from "@/components/nav-user"
 import { TeamSwitcher } from "@/components/team-switcher"
@@ -12,7 +11,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, HeartHandshakeIcon, FileTextIcon, HandshakeIcon, BuildingIcon, SettingsIcon, UsersIcon, ShieldIcon, UserCheckIcon, CalendarIcon, BarChart3Icon } from "lucide-react"
+import { LayoutDashboardIcon, HeartHandshakeIcon, FileTextIcon, HandshakeIcon, SettingsIcon, UsersIcon, ShieldIcon, UserCheckIcon, CalendarIcon, BarChart3Icon } from "lucide-react"
 
 interface NavItem {
   title: string
@@ -23,27 +22,21 @@ interface NavItem {
 }
 
 function buildNavForRole(role: string | null): NavItem[] {
-  // Admin (chapter admin) — limited nav, chapter-scoped only
   if (role === "admin") {
     return [
       { title: "Dashboard", url: "/dashboard", icon: <LayoutDashboardIcon />, isActive: true },
-      {
-        title: "Tools", url: "#", icon: <HeartHandshakeIcon />, items: [
-          { title: "TYFCB", url: "/tyfcb" },
-          { title: "Referral Slip", url: "/referral-slip" },
-          { title: "1 & 1", url: "/one-and-one" },
-        ],
-      },
-      {
-        title: "Performance", url: "#", icon: <CalendarIcon />, items: [
-          { title: "Attendance", url: "/attendance" },
-        ],
-      },
+      { title: "Tools", url: "#", icon: <HeartHandshakeIcon />, items: [
+        { title: "TYFCB", url: "/tyfcb" },
+        { title: "Referral Slip", url: "/referral-slip" },
+        { title: "1 & 1", url: "/one-and-one" },
+      ]},
+      { title: "Performance", url: "#", icon: <CalendarIcon />, items: [
+        { title: "Attendance", url: "/attendance" },
+      ]},
       { title: "Reports", url: "/reports", icon: <BarChart3Icon /> },
     ]
   }
 
-  // Member — attendance only via /members
   if (role === "member") {
     return [
       { title: "Dashboard", url: "/dashboard", icon: <LayoutDashboardIcon />, isActive: true },
@@ -54,42 +47,29 @@ function buildNavForRole(role: string | null): NavItem[] {
   // Superadmin / default — full nav
   return [
     { title: "Dashboard", url: "/dashboard", icon: <LayoutDashboardIcon />, isActive: true },
-    {
-      title: "Tools", url: "#", icon: <HeartHandshakeIcon />, items: [
-        { title: "TYFCB", url: "/tyfcb" },
-        { title: "Referral Slip", url: "/referral-slip" },
-        { title: "1 & 1", url: "/one-and-one" },
-        { title: "Chapters", url: "/chapters" },
-      ],
-    },
-    {
-      title: "Performance", url: "#", icon: <CalendarIcon />, items: [
-        { title: "Attendance", url: "/attendance" },
-        { title: "Visitor", url: "/visitor" },
-        { title: "Testimonials", url: "/testimonials" },
-      ],
-    },
+    { title: "Tools", url: "#", icon: <HeartHandshakeIcon />, items: [
+      { title: "TYFCB", url: "/tyfcb" },
+      { title: "Referral Slip", url: "/referral-slip" },
+      { title: "1 & 1", url: "/one-and-one" },
+      { title: "Chapters", url: "/chapters" },
+    ]},
+    { title: "Performance", url: "#", icon: <CalendarIcon />, items: [
+      { title: "Attendance", url: "/attendance" },
+      { title: "Visitor", url: "/visitor" },
+      { title: "Testimonials", url: "/testimonials" },
+    ]},
     { title: "Users", url: "/users", icon: <UsersIcon /> },
     { title: "Members", url: "/members", icon: <UserCheckIcon /> },
     { title: "Admin", url: "/admin", icon: <ShieldIcon /> },
   ]
 }
 
-export async function AppSidebar() {
-  const supabase = await createClient()
-  const { data: { session } } = await supabase.auth.getSession()
+interface AppSidebarProps {
+  role?: string | null
+}
 
-  let role: string | null = null
-  if (session?.user) {
-    const { data } = await supabase
-      .from("users")
-      .select("role")
-      .eq("id", session.user.id)
-      .single()
-    role = data?.role ?? null
-  }
-
-  const navItems = buildNavForRole(role)
+export function AppSidebar({ role }: AppSidebarProps) {
+  const navItems = buildNavForRole(role ?? null)
 
   return (
     <Sidebar collapsible="icon">

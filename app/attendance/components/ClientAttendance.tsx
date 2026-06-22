@@ -36,6 +36,8 @@ import type { Chapter, Attendance } from "@/lib/supabase/database.types"
 
 interface ClientAttendanceProps {
   chapters: Chapter[]
+  userRole?: string | null
+  defaultChapterId?: number | null
 }
 
 interface MemberAttendance {
@@ -63,9 +65,9 @@ function avatarColor(name: string) {
   return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length]
 }
 
-export default function ClientAttendance({ chapters }: ClientAttendanceProps) {
+export default function ClientAttendance({ chapters, userRole, defaultChapterId }: ClientAttendanceProps) {
   const [selectedChapter, setSelectedChapter] = useState<number | null>(
-    chapters.length > 0 ? chapters[0].id : null
+    defaultChapterId ?? (chapters.length > 0 ? chapters[0].id : null)
   )
   const [selectedDate, setSelectedDate] = useState<string | null>(null)
   const [members, setMembers] = useState<string[]>([])
@@ -129,7 +131,7 @@ export default function ClientAttendance({ chapters }: ClientAttendanceProps) {
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar role={userRole} />
       <SidebarInset>
         {/* Header */}
         <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white/80 backdrop-blur-sm px-4">
@@ -149,25 +151,29 @@ export default function ClientAttendance({ chapters }: ClientAttendanceProps) {
         </header>
 
         <div className="flex flex-1 flex-col gap-6 p-4 md:p-6 bg-muted/20 min-h-0">
-          {/* Title + Chapter selector row */}
+          {/* Title + Chapter selector row (hidden for admin — auto-scoped) */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight">Attendance</h1>
+              <h1 className="text-2xl font-bold tracking-tight">
+                Attendance{userRole === "admin" && chapters.length > 0 ? ` — ${chapters[0].name}` : ""}
+              </h1>
               <p className="text-sm text-muted-foreground mt-0.5">Track chapter meeting attendance</p>
             </div>
-            <Select
-              value={selectedChapter?.toString() || ""}
-              onValueChange={(v) => { setSelectedChapter(Number(v)); setSelectedDate(null) }}
-            >
-              <SelectTrigger className="w-56 bg-white shadow-sm">
-                <SelectValue placeholder="Select chapter" />
-              </SelectTrigger>
-              <SelectContent>
-                {chapters.map((c) => (
-                  <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            {userRole !== "admin" && (
+              <Select
+                value={selectedChapter?.toString() || ""}
+                onValueChange={(v) => { setSelectedChapter(Number(v)); setSelectedDate(null) }}
+              >
+                <SelectTrigger className="w-56 bg-white shadow-sm">
+                  <SelectValue placeholder="Select chapter" />
+                </SelectTrigger>
+                <SelectContent>
+                  {chapters.map((c) => (
+                    <SelectItem key={c.id} value={c.id.toString()}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
 
           {selectedChapter && (

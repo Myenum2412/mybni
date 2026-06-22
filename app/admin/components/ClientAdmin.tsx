@@ -35,15 +35,15 @@ interface ClientAdminProps {
 export default function ClientAdmin({ chaptersCount, tyfcbsCount, referralsCount, oneAndOnesCount, userRole }: ClientAdminProps) {
   const router = useRouter()
 
-  const isAdmin = userRole === "admin" || userRole === "superadmin"
+  const isSuperadmin = userRole === "superadmin"
 
   useEffect(() => {
-    if (!isAdmin) {
+    if (!isSuperadmin) {
       router.push("/dashboard")
     }
-  }, [isAdmin, router])
+  }, [isSuperadmin, router])
 
-  if (!isAdmin) {
+  if (!isSuperadmin) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Card className="w-full max-w-md">
@@ -61,7 +61,7 @@ export default function ClientAdmin({ chaptersCount, tyfcbsCount, referralsCount
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar role={userRole} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
           <div className="flex items-center gap-2 px-4">

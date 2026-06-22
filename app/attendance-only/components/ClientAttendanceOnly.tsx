@@ -32,6 +32,7 @@ interface ClientAttendanceOnlyProps {
   initialAttendance: Record<number, Attendance[]>
   initialMembers: Record<number, string[]>
   initialDate: string
+  userRole?: string | null
 }
 
 interface MemberAttendance {
@@ -59,6 +60,7 @@ export default function ClientAttendanceOnly({
   initialAttendance,
   initialMembers,
   initialDate,
+  userRole,
 }: ClientAttendanceOnlyProps) {
   const [selectedChapter, setSelectedChapter] = useState<number | null>(
     chapters.length > 0 ? chapters[0].id : null
@@ -140,7 +142,7 @@ export default function ClientAttendanceOnly({
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar role={userRole} />
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-white/80 backdrop-blur-sm px-4">
           <SidebarTrigger className="-ml-1" />
