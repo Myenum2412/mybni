@@ -1,11 +1,5 @@
 "use client"
 
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Referral Slip",
-}
-
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -37,11 +31,13 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Badge } from "@/components/reui/badge"
-import { useReferrals } from "@/lib/supabase/hooks"
+import type { Referral } from "@/lib/supabase/database.types"
 
-export default function ReferralSlipPage() {
-  const { referrals, loading } = useReferrals()
+interface ClientReferralSlipProps {
+  referrals: (Referral & { chapters?: { name?: string } })[]
+}
 
+export default function ClientReferralSlip({ referrals }: ClientReferralSlipProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -74,11 +70,7 @@ export default function ReferralSlipPage() {
               <CardDescription>All referral entries from chapter members</CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex h-32 items-center justify-center">
-                  <span className="text-sm text-muted-foreground">Loading...</span>
-                </div>
-              ) : referrals.length === 0 ? (
+              {referrals.length === 0 ? (
                 <div className="flex h-32 items-center justify-center">
                   <span className="text-sm text-muted-foreground">No records found. Add entries from the entry form.</span>
                 </div>

@@ -1,11 +1,5 @@
 "use client"
 
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "TYFCB",
-}
-
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -36,11 +30,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useTyfcbs } from "@/lib/supabase/hooks"
+import type { Tyfcb } from "@/lib/supabase/database.types"
 
-export default function TYFCBPage() {
-  const { tyfcbs, loading } = useTyfcbs()
+interface ClientTyfcbProps {
+  tyfcbs: (Tyfcb & { chapters?: { name?: string } })[]
+}
 
+export default function ClientTyfcb({ tyfcbs }: ClientTyfcbProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -73,11 +69,7 @@ export default function TYFCBPage() {
               <CardDescription>All closed business entries from chapter members</CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex h-32 items-center justify-center">
-                  <span className="text-sm text-muted-foreground">Loading...</span>
-                </div>
-              ) : tyfcbs.length === 0 ? (
+              {tyfcbs.length === 0 ? (
                 <div className="flex h-32 items-center justify-center">
                   <span className="text-sm text-muted-foreground">No records found. Add entries from the entry form.</span>
                 </div>

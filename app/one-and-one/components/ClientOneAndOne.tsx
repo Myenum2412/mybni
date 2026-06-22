@@ -1,11 +1,5 @@
 "use client"
 
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "1 & 1",
-}
-
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -36,11 +30,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useOneAndOnes } from "@/lib/supabase/hooks"
+import type { OneAndOne } from "@/lib/supabase/database.types"
 
-export default function OneAndOnePage() {
-  const { oneAndOnes, loading } = useOneAndOnes()
+interface ClientOneAndOneProps {
+  oneAndOnes: (OneAndOne & { chapters?: { name?: string } })[]
+}
 
+export default function ClientOneAndOne({ oneAndOnes }: ClientOneAndOneProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -73,11 +69,7 @@ export default function OneAndOnePage() {
               <CardDescription>All 1 & 1 meeting entries from chapter members</CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex h-32 items-center justify-center">
-                  <span className="text-sm text-muted-foreground">Loading...</span>
-                </div>
-              ) : oneAndOnes.length === 0 ? (
+              {oneAndOnes.length === 0 ? (
                 <div className="flex h-32 items-center justify-center">
                   <span className="text-sm text-muted-foreground">No records found. Add entries from the entry form.</span>
                 </div>

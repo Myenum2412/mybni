@@ -1,11 +1,5 @@
 "use client"
 
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Entry Form",
-}
-
 import { useState } from "react"
 import {
   Card,
@@ -27,13 +21,15 @@ import {
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { CheckCircle2Icon } from "lucide-react"
-import { useChapters, useTyfcbs, useReferrals, useOneAndOnes } from "@/lib/supabase/hooks"
+import { createClient } from "@/lib/supabase/client"
+import type { Chapter } from "@/lib/supabase/database.types"
 
-export default function EntryFormPage() {
-  const { chapters } = useChapters()
-  const { addTyfcb } = useTyfcbs()
-  const { addReferral } = useReferrals()
-  const { addOneAndOne } = useOneAndOnes()
+interface ClientEntryFormProps {
+  chapters: Chapter[]
+}
+
+export default function ClientEntryForm({ chapters }: ClientEntryFormProps) {
+  const supabase = createClient()
 
   const [activeTab, setActiveTab] = useState("tyfcb")
   const [submitted, setSubmitted] = useState(false)
@@ -83,7 +79,7 @@ export default function EntryFormPage() {
 
     try {
       if (activeTab === "tyfcb" && tyfcbForm.chapter_id) {
-        await addTyfcb({
+        await supabase.from("tyfcbs").insert({
           chapter_id: tyfcbForm.chapter_id,
           user_name: tyfcbForm.user_name,
           thank_you_to: tyfcbForm.thank_you_to,
@@ -93,7 +89,7 @@ export default function EntryFormPage() {
           comments: tyfcbForm.comments || null,
         })
       } else if (activeTab === "referral" && referralForm.chapter_id) {
-        await addReferral({
+        await supabase.from("referrals").insert({
           chapter_id: referralForm.chapter_id,
           user_name: referralForm.user_name,
           referred_to: referralForm.referred_to,
@@ -105,7 +101,7 @@ export default function EntryFormPage() {
           address: referralForm.address || null,
         })
       } else if (activeTab === "one-and-one" && oneAndOneForm.chapter_id) {
-        await addOneAndOne({
+        await supabase.from("one_and_ones").insert({
           chapter_id: oneAndOneForm.chapter_id,
           user_name: oneAndOneForm.user_name,
           met_with: oneAndOneForm.met_with,

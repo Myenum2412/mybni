@@ -50,9 +50,8 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useChapters, useTyfcbs, useReferrals, useOneAndOnes } from "@/lib/supabase/hooks"
-import { useAuth } from "@/lib/supabase/auth"
 import { UsersIcon, PlusIcon, EyeIcon, EyeOffIcon, Loader2Icon } from "lucide-react"
+import type { Chapter, Tyfcb, Referral, OneAndOne } from "@/lib/supabase/database.types"
 
 interface UserEntry {
   id: number
@@ -63,20 +62,27 @@ interface UserEntry {
   date: string
 }
 
-export default function UsersPage() {
-  const { user, loading: authLoading } = useAuth()
-  const { chapters } = useChapters()
-  const { tyfcbs } = useTyfcbs()
-  const { referrals } = useReferrals()
-  const { oneAndOnes } = useOneAndOnes()
+interface ClientUsersProps {
+  chapters: Chapter[]
+  tyfcbs: (Tyfcb & { chapters?: { name?: string } })[]
+  referrals: (Referral & { chapters?: { name?: string } })[]
+  oneAndOnes: (OneAndOne & { chapters?: { name?: string } })[]
+  currentUser: {
+    id: string
+    email: string
+    role: string
+    chapter_id: number | null
+  } | null
+}
 
-  const isAdmin = user?.role === "admin" || user?.role === "superadmin"
+export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, currentUser }: ClientUsersProps) {
+  const isAdmin = currentUser?.role === "admin" || currentUser?.role === "superadmin"
 
   const userChapterName = useMemo(() => {
-    if (!user?.chapter_id) return null
-    const chapter = chapters.find((c) => c.id === user.chapter_id)
+    if (!currentUser?.chapter_id) return null
+    const chapter = chapters.find((c) => c.id === currentUser.chapter_id)
     return chapter?.name ?? null
-  }, [user?.chapter_id, chapters])
+  }, [currentUser?.chapter_id, chapters])
 
   const [selectedChapter, setSelectedChapter] = useState<string>("all")
 
@@ -186,14 +192,6 @@ export default function UsersPage() {
     } finally {
       setCreating(false)
     }
-  }
-
-  if (authLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="text-muted-foreground">Loading...</span>
-      </div>
-    )
   }
 
   return (

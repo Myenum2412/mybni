@@ -1,11 +1,5 @@
 "use client"
 
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Dashboard",
-}
-
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -36,7 +30,6 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/reui/badge"
 import { QrPopup } from "@/components/qr-popup"
-import { useDashboardStats, useRecentActivity } from "@/lib/supabase/hooks"
 import {
   HeartHandshakeIcon,
   FileTextIcon,
@@ -82,10 +75,28 @@ const statConfig = [
   { key: "totalRevenue" as const, title: "Total Revenue", description: "From closed referrals", icon: <DollarSignIcon className="size-5" />, color: "text-amber-600", bg: "bg-amber-50" },
 ]
 
-export default function DashboardPage() {
-  const { stats, loading: statsLoading } = useDashboardStats()
-  const { activities, loading: activityLoading } = useRecentActivity()
+interface DashboardStats {
+  totalTyfcbs: number
+  activeReferrals: number
+  totalMeetings: number
+  totalRevenue: string
+}
 
+interface Activity {
+  id: number
+  type: string
+  member: string
+  detail: string
+  status: string
+  date: string
+}
+
+interface ClientDashboardProps {
+  stats: DashboardStats
+  activities: Activity[]
+}
+
+export default function ClientDashboard({ stats, activities }: ClientDashboardProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -124,7 +135,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {statsLoading ? "—" : stat.key === "totalRevenue" ? stats.totalRevenue : stats[stat.key]}
+                    {stat.key === "totalRevenue" ? stats.totalRevenue : stats[stat.key]}
                   </div>
                   <p className="text-xs text-muted-foreground">{stat.description}</p>
                 </CardContent>
@@ -162,11 +173,7 @@ export default function DashboardPage() {
               <CardDescription>Latest entries across all sections</CardDescription>
             </CardHeader>
             <CardContent>
-              {activityLoading ? (
-                <div className="flex h-32 items-center justify-center">
-                  <span className="text-sm text-muted-foreground">Loading...</span>
-                </div>
-              ) : activities.length === 0 ? (
+              {activities.length === 0 ? (
                 <div className="flex h-32 items-center justify-center">
                   <span className="text-sm text-muted-foreground">No activity yet. Use the QR code to add entries.</span>
                 </div>

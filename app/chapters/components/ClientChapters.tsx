@@ -1,11 +1,5 @@
 "use client"
 
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Chapters",
-}
-
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -36,11 +30,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useChapters } from "@/lib/supabase/hooks"
+import type { Chapter } from "@/lib/supabase/database.types"
 
-export default function ChaptersPage() {
-  const { chapters, loading } = useChapters()
+interface ClientChaptersProps {
+  chapters: Chapter[]
+}
 
+export default function ClientChapters({ chapters }: ClientChaptersProps) {
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -73,11 +69,7 @@ export default function ChaptersPage() {
               <CardDescription>All BNI chapters in the network</CardDescription>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex h-32 items-center justify-center">
-                  <span className="text-sm text-muted-foreground">Loading...</span>
-                </div>
-              ) : chapters.length === 0 ? (
+              {chapters.length === 0 ? (
                 <div className="flex h-32 items-center justify-center">
                   <span className="text-sm text-muted-foreground">No chapters found. Add chapters from Settings.</span>
                 </div>

@@ -1,11 +1,5 @@
 "use client"
 
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Admin",
-}
-
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"
@@ -28,33 +22,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { useAuth } from "@/lib/supabase/auth"
-import { useChapters, useTyfcbs, useReferrals, useOneAndOnes } from "@/lib/supabase/hooks"
 import { ShieldAlertIcon, UsersIcon, FileTextIcon, HandshakeIcon, HeartHandshakeIcon } from "lucide-react"
 
-export default function AdminPage() {
-  const { user, loading: authLoading } = useAuth()
+interface ClientAdminProps {
+  chaptersCount: number
+  tyfcbsCount: number
+  referralsCount: number
+  oneAndOnesCount: number
+  userRole: string | null
+}
+
+export default function ClientAdmin({ chaptersCount, tyfcbsCount, referralsCount, oneAndOnesCount, userRole }: ClientAdminProps) {
   const router = useRouter()
-  const { chapters } = useChapters()
-  const { tyfcbs } = useTyfcbs()
-  const { referrals } = useReferrals()
-  const { oneAndOnes } = useOneAndOnes()
+
+  const isAdmin = userRole === "admin" || userRole === "superadmin"
 
   useEffect(() => {
-    if (!authLoading && (!user || (user.role !== "admin" && user.role !== "superadmin"))) {
+    if (!isAdmin) {
       router.push("/dashboard")
     }
-  }, [user, authLoading, router])
+  }, [isAdmin, router])
 
-  if (authLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="text-muted-foreground">Loading...</span>
-      </div>
-    )
-  }
-
-  if (!user || (user.role !== "admin" && user.role !== "superadmin")) {
+  if (!isAdmin) {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Card className="w-full max-w-md">
@@ -100,7 +89,7 @@ export default function AdminPage() {
                 <UsersIcon className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{chapters.length}</div>
+                <div className="text-2xl font-bold">{chaptersCount}</div>
                 <p className="text-xs text-muted-foreground">Total chapters</p>
               </CardContent>
             </Card>
@@ -110,7 +99,7 @@ export default function AdminPage() {
                 <HeartHandshakeIcon className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{tyfcbs.length}</div>
+                <div className="text-2xl font-bold">{tyfcbsCount}</div>
                 <p className="text-xs text-muted-foreground">Closed business records</p>
               </CardContent>
             </Card>
@@ -120,7 +109,7 @@ export default function AdminPage() {
                 <FileTextIcon className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{referrals.length}</div>
+                <div className="text-2xl font-bold">{referralsCount}</div>
                 <p className="text-xs text-muted-foreground">Referral records</p>
               </CardContent>
             </Card>
@@ -130,7 +119,7 @@ export default function AdminPage() {
                 <HandshakeIcon className="size-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{oneAndOnes.length}</div>
+                <div className="text-2xl font-bold">{oneAndOnesCount}</div>
                 <p className="text-xs text-muted-foreground">Meeting records</p>
               </CardContent>
             </Card>

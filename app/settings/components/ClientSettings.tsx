@@ -1,11 +1,5 @@
 "use client"
 
-import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "Settings",
-}
-
 import { useState } from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
@@ -57,11 +51,17 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { PlusIcon, PencilIcon, Trash2Icon } from "lucide-react"
-import { useChapters } from "@/lib/supabase/hooks"
+import { createClient } from "@/lib/supabase/client"
 import type { Chapter, ChapterInsert } from "@/lib/supabase/database.types"
 
-export default function SettingsPage() {
-  const { chapters, loading, addChapter, updateChapter, deleteChapter } = useChapters()
+interface ClientSettingsProps {
+  chapters: Chapter[]
+}
+
+export default function ClientSettings({ chapters: initialChapters }: ClientSettingsProps) {
+  const [chapters, setChapters] = useState<Chapter[]>(initialChapters)
+  const supabase = createClient()
+
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
   const [editingChapter, setEditingChapter] = useState<Chapter | null>(null)
@@ -88,15 +88,22 @@ export default function SettingsPage() {
   }
 
   const handleAdd = async () => {
-    await addChapter({
-      name: formData.name,
-      region: formData.region ?? "",
-      meeting_day: formData.meeting_day ?? "",
-      meeting_time: formData.meeting_time,
-      location: formData.location,
-      president: formData.president,
-      members: Number(formData.members) || 0,
-    })
+    const { data } = await supabase
+      .from("chapters")
+      .insert({
+        name: formData.name,
+        region: formData.region ?? "",
+        meeting_day: formData.meeting_day ?? "",
+        meeting_time: formData.meeting_time,
+        location: formData.location,
+        president: formData.president,
+        members: Number(formData.members) || 0,
+      })
+      .select()
+      .single()
+    if (data) {
+      setChapters((prev) => [...prev, data])
+    }
     resetForm()
     setIsAddOpen(false)
   }
@@ -117,22 +124,31 @@ export default function SettingsPage() {
 
   const handleUpdate = async () => {
     if (!editingChapter) return
-    await updateChapter(editingChapter.id, {
-      name: formData.name,
-      region: formData.region ?? "",
-      meeting_day: formData.meeting_day ?? "",
-      meeting_time: formData.meeting_time,
-      location: formData.location,
-      president: formData.president,
-      members: Number(formData.members) || 0,
-    })
+    const { data } = await supabase
+      .from("chapters")
+      .update({
+        name: formData.name,
+        region: formData.region ?? "",
+        meeting_day: formData.meeting_day ?? "",
+        meeting_time: formData.meeting_time,
+        location: formData.location,
+        president: formData.president,
+        members: Number(formData.members) || 0,
+      })
+      .eq("id", editingChapter.id)
+      .select()
+      .single()
+    if (data) {
+      setChapters((prev) => prev.map((c) => (c.id === editingChapter.id ? data : c)))
+    }
     resetForm()
     setIsEditOpen(false)
     setEditingChapter(null)
   }
 
   const handleDelete = async (id: number) => {
-    await deleteChapter(id)
+    await supabase.from("chapters").delete().eq("id", id)
+    setChapters((prev) => prev.filter((c) => c.id !== id))
   }
 
   return (
@@ -244,11 +260,7 @@ export default function SettingsPage() {
               </Dialog>
             </CardHeader>
             <CardContent>
-              {loading ? (
-                <div className="flex h-32 items-center justify-center">
-                  <span className="text-sm text-muted-foreground">Loading...</span>
-                </div>
-              ) : chapters.length === 0 ? (
+              {chapters.length === 0 ? (
                 <div className="flex h-32 items-center justify-center">
                   <span className="text-sm text-muted-foreground">No chapters found. Add a chapter to get started.</span>
                 </div>

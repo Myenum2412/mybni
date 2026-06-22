@@ -135,7 +135,7 @@ function LoginForm() {
   )
 }
 
-export default function LoginPage() {
+export default function ClientLogin() {
   return (
     <Suspense fallback={
       <div className="flex min-h-screen items-center justify-center">

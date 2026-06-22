@@ -1,8 +1,10 @@
 import type { Metadata } from "next"
-import PageClient from "./page-client"
+import ClientLogin from "./components/ClientLogin"
 
 export const metadata: Metadata = {
   title: "Login",
 }
 
-export default PageClient
+export default function LoginPage() {
+  return <ClientLogin />
+}

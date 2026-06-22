@@ -52,3 +52,14 @@
 {"file":"app/login/page-client.tsx","action":"Write","timestamp":"2026-06-22T02:37:41Z","important":false}
 {"file":"app/users/page-client.tsx","action":"Write","timestamp":"2026-06-22T02:42:31Z","important":false}
 {"file":"app/api/users/route.ts","action":"Write","timestamp":"2026-06-22T02:42:52Z","important":false}
+{"file":"lib/supabase/server-data.ts","action":"Write","timestamp":"2026-06-22T02:47:51Z","important":false}
+{"file":"app/chapters/components/ClientChapters.tsx","action":"Write","timestamp":"2026-06-22T02:50:49Z","important":false}
+{"file":"app/tyfcb/components/ClientTyfcb.tsx","action":"Write","timestamp":"2026-06-22T02:51:09Z","important":false}
+{"file":"app/referral-slip/components/ClientReferralSlip.tsx","action":"Write","timestamp":"2026-06-22T02:51:30Z","important":false}
+{"file":"app/one-and-one/components/ClientOneAndOne.tsx","action":"Write","timestamp":"2026-06-22T02:51:49Z","important":false}
+{"file":"app/dashboard/components/ClientDashboard.tsx","action":"Write","timestamp":"2026-06-22T02:53:32Z","important":false}
+{"file":"app/entry-form/components/ClientEntryForm.tsx","action":"Write","timestamp":"2026-06-22T02:55:03Z","important":false}
+{"file":"app/users/components/ClientUsers.tsx","action":"Write","timestamp":"2026-06-22T02:56:23Z","important":false}
+{"file":"app/settings/components/ClientSettings.tsx","action":"Write","timestamp":"2026-06-22T02:57:46Z","important":false}
+{"file":"app/admin/components/ClientAdmin.tsx","action":"Write","timestamp":"2026-06-22T02:58:17Z","important":false}
+{"file":"app/login/components/ClientLogin.tsx","action":"Write","timestamp":"2026-06-22T02:59:30Z","important":false}
