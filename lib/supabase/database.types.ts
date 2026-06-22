@@ -84,7 +84,7 @@ export interface Database {
           id: number
           chapter_id: number
           user_name: string
-          to: string
+          referred_to: string
           referral_type: string
           referral_status: string
           referral: string
@@ -97,7 +97,7 @@ export interface Database {
           id?: number
           chapter_id: number
           user_name: string
-          to: string
+          referred_to: string
           referral_type: string
           referral_status: string
           referral: string

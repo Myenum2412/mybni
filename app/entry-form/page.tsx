@@ -52,7 +52,7 @@ export default function EntryFormPage() {
   const [referralForm, setReferralForm] = useState({
     chapter_id: null as number | null,
     user_name: "",
-    to: "",
+    referred_to: "",
     referral_type: null as string | null,
     referral_status: null as string | null,
     referral: "",
@@ -73,7 +73,7 @@ export default function EntryFormPage() {
 
   const resetForms = () => {
     setTyfcbForm({ chapter_id: null, user_name: "", thank_you_to: "", amount: "", business_type: "", referral_type: null, comments: "" })
-    setReferralForm({ chapter_id: null, user_name: "", to: "", referral_type: null, referral_status: null, referral: "", telephone: "", email: "", address: "" })
+    setReferralForm({ chapter_id: null, user_name: "", referred_to: "", referral_type: null, referral_status: null, referral: "", telephone: "", email: "", address: "" })
     setOneAndOneForm({ chapter_id: null, user_name: "", met_with: "", initiated_by: "", where_did_you_meet: "", date: "", topics_of_conversation: "" })
   }
 
@@ -96,7 +96,7 @@ export default function EntryFormPage() {
         await addReferral({
           chapter_id: referralForm.chapter_id,
           user_name: referralForm.user_name,
-          to: referralForm.to,
+          referred_to: referralForm.referred_to,
           referral_type: referralForm.referral_type ?? "",
           referral_status: referralForm.referral_status ?? "Pending",
           referral: referralForm.referral,
@@ -253,7 +253,7 @@ export default function EntryFormPage() {
                     </div>
                     <div className="grid gap-2">
                       <Label>To</Label>
-                      <Input value={referralForm.to} onChange={(e) => setReferralForm({ ...referralForm, to: e.target.value })} placeholder="Referred person" />
+                      <Input value={referralForm.referred_to} onChange={(e) => setReferralForm({ ...referralForm, referred_to: e.target.value })} placeholder="Referred person" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="grid gap-2">

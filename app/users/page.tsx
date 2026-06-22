@@ -111,7 +111,7 @@ export default function UsersPage() {
         userName: r.user_name,
         chapterName: (r as unknown as { chapters?: { name?: string } }).chapters?.name || "—",
         type: "Referral",
-        detail: `To: ${r.to} — ${r.referral} [${r.referral_status}]`,
+        detail: `To: ${r.referred_to} — ${r.referral} [${r.referral_status}]`,
         date: new Date(r.created_at).toISOString().split("T")[0],
       })
     })

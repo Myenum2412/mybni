@@ -1,7 +1,16 @@
 -- BNI Database Schema
 -- Run this in Supabase SQL Editor: https://supabase.com/dashboard/project/cbwnhqboezngcagiiutg/sql/new
 
--- 1. Chapters table
+-- 1. Users table (for auth profiles)
+CREATE TABLE IF NOT EXISTS public.users (
+  id UUID PRIMARY KEY,
+  email TEXT NOT NULL UNIQUE,
+  role TEXT NOT NULL DEFAULT 'member',
+  chapter_id BIGINT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 2. Chapters table
 CREATE TABLE IF NOT EXISTS public.chapters (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   name TEXT NOT NULL,
@@ -14,7 +23,7 @@ CREATE TABLE IF NOT EXISTS public.chapters (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 2. TYFCBs table
+-- 3. TYFCBs table
 CREATE TABLE IF NOT EXISTS public.tyfcbs (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   chapter_id BIGINT NOT NULL REFERENCES public.chapters(id) ON DELETE CASCADE,
@@ -27,12 +36,12 @@ CREATE TABLE IF NOT EXISTS public.tyfcbs (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 3. Referrals table
+-- 4. Referrals table
 CREATE TABLE IF NOT EXISTS public.referrals (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   chapter_id BIGINT NOT NULL REFERENCES public.chapters(id) ON DELETE CASCADE,
   user_name TEXT NOT NULL DEFAULT '',
-  to TEXT NOT NULL DEFAULT '',
+  referred_to TEXT NOT NULL DEFAULT '',
   referral_type TEXT NOT NULL DEFAULT '',
   referral_status TEXT NOT NULL DEFAULT 'Pending',
   referral TEXT NOT NULL DEFAULT '',
@@ -42,7 +51,7 @@ CREATE TABLE IF NOT EXISTS public.referrals (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 4. One & Ones table
+-- 5. One & Ones table
 CREATE TABLE IF NOT EXISTS public.one_and_ones (
   id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   chapter_id BIGINT NOT NULL REFERENCES public.chapters(id) ON DELETE CASCADE,
@@ -55,13 +64,24 @@ CREATE TABLE IF NOT EXISTS public.one_and_ones (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Enable RLS (Row Level Security)
+-- Enable RLS
+ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chapters ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.tyfcbs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.referrals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.one_and_ones ENABLE ROW LEVEL SECURITY;
 
--- Create policies for public access (adjust for your auth needs)
+-- Drop existing policies
+DROP POLICY IF EXISTS "Users can read own profile" ON public.users;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.users;
+DROP POLICY IF EXISTS "Allow all access on chapters" ON public.chapters;
+DROP POLICY IF EXISTS "Allow all access on tyfcbs" ON public.tyfcbs;
+DROP POLICY IF EXISTS "Allow all access on referrals" ON public.referrals;
+DROP POLICY IF EXISTS "Allow all access on one_and_ones" ON public.one_and_ones;
+
+-- Create policies
+CREATE POLICY "Users can read own profile" ON public.users FOR SELECT USING (true);
+CREATE POLICY "Users can update own profile" ON public.users FOR UPDATE USING (true);
 CREATE POLICY "Allow all access on chapters" ON public.chapters FOR ALL USING (true);
 CREATE POLICY "Allow all access on tyfcbs" ON public.tyfcbs FOR ALL USING (true);
 CREATE POLICY "Allow all access on referrals" ON public.referrals FOR ALL USING (true);
@@ -84,7 +104,7 @@ INSERT INTO public.tyfcbs (chapter_id, user_name, thank_you_to, amount, business
   (5, 'James Taylor', 'Emma Moore', '$7,800', 'Accounting', 'Indirect', 'Tax consultation referral');
 
 -- Insert sample Referrals
-INSERT INTO public.referrals (chapter_id, user_name, to, referral_type, referral_status, referral, telephone, email, address) VALUES
+INSERT INTO public.referrals (chapter_id, user_name, referred_to, referral_type, referral_status, referral, telephone, email, address) VALUES
   (1, 'John Smith', 'Alice Johnson', 'Direct', 'Closed', 'Real Estate Deal', '(555) 123-4567', 'alice@example.com', '123 Main St, New York, NY'),
   (2, 'Sarah Williams', 'Bob Miller', 'Indirect', 'Pending', 'Insurance Policy', '(555) 234-5678', 'bob@example.com', '456 Oak Ave, Los Angeles, CA'),
   (3, 'Mike Davis', 'Carol White', 'Direct', 'Closed', 'Construction Project', '(555) 345-6789', 'carol@example.com', '789 Pine Rd, Chicago, IL'),

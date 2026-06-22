@@ -36,3 +36,9 @@
 {"file":"app/one-and-one/page.tsx","action":"Edit","timestamp":"2026-06-21T18:47:17Z","important":false}
 {"file":"app/chapters/page.tsx","action":"Edit","timestamp":"2026-06-21T18:47:19Z","important":false}
 {"file":"app/settings/page.tsx","action":"Edit","timestamp":"2026-06-21T18:47:22Z","important":false}
+{"file":"supabase/migrations/001_create_tables.sql","action":"Write","timestamp":"2026-06-22T02:27:53Z","important":false}
+{"file":"lib/supabase/database.types.ts","action":"Edit","timestamp":"2026-06-22T02:28:25Z","important":false}
+{"file":"app/referral-slip/page.tsx","action":"Edit","timestamp":"2026-06-22T02:29:05Z","important":false}
+{"file":"app/users/page.tsx","action":"Edit","timestamp":"2026-06-22T02:29:26Z","important":false}
+{"file":"app/entry-form/page.tsx","action":"Edit","timestamp":"2026-06-22T02:30:04Z","important":false}
+{"file":"lib/supabase/hooks.ts","action":"Edit","timestamp":"2026-06-22T02:30:56Z","important":false}

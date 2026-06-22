@@ -327,7 +327,7 @@ export function useRecentActivity() {
           id: r.id + 1000,
           type: "Referral",
           member: r.user_name,
-          detail: `Referred to ${r.to}`,
+          detail: `Referred to ${r.referred_to}`,
           status: r.referral_status,
           date: new Date(r.created_at).toISOString().split("T")[0],
           created_at: r.created_at,

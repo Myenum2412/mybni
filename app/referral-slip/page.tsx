@@ -102,7 +102,7 @@ export default function ReferralSlipPage() {
                       <TableRow key={row.id}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell className="font-medium">{row.user_name}</TableCell>
-                        <TableCell>{row.to}</TableCell>
+                        <TableCell>{row.referred_to}</TableCell>
                         <TableCell>{row.referral_type}</TableCell>
                         <TableCell>
                           <Badge
