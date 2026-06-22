@@ -245,3 +245,18 @@
 {"data":{"file_path":"/root/mybni/lib/supabase/hooks.ts"},"id":"event-000245","state":"stopped","ts":"2026-06-22T02:30:56Z","type":"tool.edit"}
 {"data":{"command":"grep -rn \"\\\"To\\\"\" /root/mybni/app/users/page.tsx /root/mybni/app/entry-form/page.tsx /root/mybni/app/referral-slip/page.tsx 2\u003e/dev/null"},"id":"event-000246","state":"stopped","ts":"2026-06-22T02:31:12Z","type":"tool.bash"}
 {"data":{"command":"npx tsc --noEmit 2\u003e\u00261"},"id":"event-000247","state":"stopped","ts":"2026-06-22T02:31:32Z","type":"tool.bash"}
+{"data":{"command":"git add -A \u0026\u0026 git commit -m \"fix: rename 'to' column to 'referred_to' in referrals table\n\n- SQL migration: 'to' is a reserved keyword in PostgreSQL, renamed to 'referred_to'\n- Updated database types, "},"id":"event-000248","state":"stopped","ts":"2026-06-22T02:32:03Z","type":"tool.bash"}
+{"data":{"command":"mv /root/mybni/app/admin/page.tsx /root/mybni/app/admin/page-client.tsx \u0026\u0026 mv /root/mybni/app/chapters/page.tsx /root/mybni/app/chapters/page-client.tsx \u0026\u0026 mv /root/mybni/app/dashboard/page.tsx /root/"},"id":"event-000249","state":"stopped","ts":"2026-06-22T02:35:32Z","type":"tool.bash"}
+{"data":{"file_path":"/root/mybni/app/admin/page.tsx"},"id":"event-000250","state":"stopped","ts":"2026-06-22T02:35:38Z","type":"tool.write"}
+{"data":{"file_path":"/root/mybni/app/chapters/page.tsx"},"id":"event-000251","state":"stopped","ts":"2026-06-22T02:35:40Z","type":"tool.write"}
+{"data":{"file_path":"/root/mybni/app/dashboard/page.tsx"},"id":"event-000252","state":"stopped","ts":"2026-06-22T02:35:41Z","type":"tool.write"}
+{"data":{"file_path":"/root/mybni/app/entry-form/page.tsx"},"id":"event-000253","state":"stopped","ts":"2026-06-22T02:35:42Z","type":"tool.write"}
+{"data":{"file_path":"/root/mybni/app/login/page.tsx"},"id":"event-000254","state":"stopped","ts":"2026-06-22T02:35:44Z","type":"tool.write"}
+{"data":{"file_path":"/root/mybni/app/one-and-one/page.tsx"},"id":"event-000255","state":"stopped","ts":"2026-06-22T02:35:45Z","type":"tool.write"}
+{"data":{"file_path":"/root/mybni/app/referral-slip/page.tsx"},"id":"event-000256","state":"stopped","ts":"2026-06-22T02:35:46Z","type":"tool.write"}
+{"data":{"file_path":"/root/mybni/app/settings/page.tsx"},"id":"event-000257","state":"stopped","ts":"2026-06-22T02:35:48Z","type":"tool.write"}
+{"data":{"file_path":"/root/mybni/app/tyfcb/page.tsx"},"id":"event-000258","state":"stopped","ts":"2026-06-22T02:35:49Z","type":"tool.write"}
+{"data":{"file_path":"/root/mybni/app/users/page.tsx"},"id":"event-000259","state":"stopped","ts":"2026-06-22T02:35:50Z","type":"tool.write"}
+{"data":{"command":"ls -la /root/mybni/app/admin/ /root/mybni/app/chapters/ /root/mybni/app/dashboard/ /root/mybni/app/entry-form/ /root/mybni/app/login/ /root/mybni/app/one-and-one/ /root/mybni/app/referral-slip/ /root/"},"id":"event-000260","state":"stopped","ts":"2026-06-22T02:35:58Z","type":"tool.bash"}
+{"data":{"file_path":"/root/mybni/app/login/page-client.tsx"},"id":"event-000261","state":"stopped","ts":"2026-06-22T02:37:41Z","type":"tool.write"}
+{"data":{"command":"npm run build 2\u003e\u00261"},"id":"event-000262","state":"stopped","ts":"2026-06-22T02:38:03Z","type":"tool.bash"}
