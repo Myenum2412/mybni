@@ -5,7 +5,7 @@ const publicPaths = ["/login", "/auth", "/api/migrate", "/api/users", "/entry-fo
 const authPaths = ["/login", "/auth/callback"]
 
 // Paths admin role cannot access (superadmin-only)
-const adminBlockedPaths = ["/users", "/admin", "/settings", "/members"]
+const adminBlockedPaths = ["/admin", "/settings"]
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })

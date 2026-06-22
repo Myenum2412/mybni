@@ -109,3 +109,6 @@
 {"file":"supabase/migrations/001_create_tables.sql","action":"Edit","timestamp":"2026-06-22T07:07:11Z","important":false}
 {"file":"app/members/page.tsx","action":"Edit","timestamp":"2026-06-22T07:10:30Z","important":false}
 {"file":"app/api/users/route.ts","action":"Edit","timestamp":"2026-06-22T07:11:26Z","important":false}
+{"file":"supabase/migrations/004_seed_superadmin.sql","action":"Write","timestamp":"2026-06-22T07:47:07Z","important":false}
+{"file":"app/login/components/ClientLogin.tsx","action":"Write","timestamp":"2026-06-22T07:48:04Z","important":false}
+{"file":"app/api/setup/route.ts","action":"Write","timestamp":"2026-06-22T07:51:08Z","important":false}
