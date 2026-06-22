@@ -13,7 +13,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, HeartHandshakeIcon, FileTextIcon, HandshakeIcon, BuildingIcon, SettingsIcon, UsersIcon, ShieldIcon } from "lucide-react"
+import { LayoutDashboardIcon, HeartHandshakeIcon, FileTextIcon, HandshakeIcon, BuildingIcon, SettingsIcon, UsersIcon, ShieldIcon, UserCheckIcon } from "lucide-react"
 
 const data = {
   user: {
@@ -55,6 +55,11 @@ const data = {
       title: "Users",
       url: "/users",
       icon: <UsersIcon />,
+    },
+    {
+      title: "Members",
+      url: "/members",
+      icon: <UserCheckIcon />,
     },
     {
       title: "Admin",

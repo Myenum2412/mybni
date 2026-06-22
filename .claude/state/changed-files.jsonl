@@ -66,3 +66,6 @@
 {"file":"app/api/migrate/route.ts","action":"Edit","timestamp":"2026-06-22T03:09:59Z","important":false}
 {"file":"components/qr-popup.tsx","action":"Write","timestamp":"2026-06-22T03:21:38Z","important":false}
 {"file":"middleware.ts","action":"Edit","timestamp":"2026-06-22T03:33:54Z","important":false}
+{"file":"app/members/page.tsx","action":"Write","timestamp":"2026-06-22T04:05:25Z","important":false}
+{"file":"app/members/components/ClientMembers.tsx","action":"Write","timestamp":"2026-06-22T04:08:22Z","important":false}
+{"file":"components/app-sidebar.tsx","action":"Edit","timestamp":"2026-06-22T04:08:34Z","important":false}

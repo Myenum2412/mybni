@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useMemo } from "react"
+import { useState } from "react"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -51,22 +51,20 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { UsersIcon, PlusIcon, EyeIcon, EyeOffIcon, Loader2Icon, UserPlusIcon } from "lucide-react"
-import type { Chapter, Tyfcb, Referral, OneAndOne } from "@/lib/supabase/database.types"
+import type { Chapter } from "@/lib/supabase/database.types"
 
-interface UserEntry {
-  id: number
-  userName: string
-  chapterName: string
-  type: string
-  detail: string
-  date: string
+interface UserAccount {
+  id: string
+  email: string
+  role: string
+  chapter_id: number | null
+  created_at: string
+  chapters?: { name: string } | null
 }
 
 interface ClientUsersProps {
+  users: UserAccount[]
   chapters: Chapter[]
-  tyfcbs: (Tyfcb & { chapters?: { name?: string } })[]
-  referrals: (Referral & { chapters?: { name?: string } })[]
-  oneAndOnes: (OneAndOne & { chapters?: { name?: string } })[]
   currentUser: {
     id: string
     email: string
@@ -75,10 +73,9 @@ interface ClientUsersProps {
   } | null
 }
 
-export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, currentUser }: ClientUsersProps) {
+export default function ClientUsers({ users, chapters, currentUser }: ClientUsersProps) {
   const isAdmin = currentUser?.role === "admin" || currentUser?.role === "superadmin"
 
-  // Create user form state
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [newUserName, setNewUserName] = useState("")
   const [newUserEmail, setNewUserEmail] = useState("")
@@ -89,44 +86,6 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
   const [creating, setCreating] = useState(false)
   const [createError, setCreateError] = useState<string | null>(null)
   const [createSuccess, setCreateSuccess] = useState(false)
-
-  const allEntries = useMemo(() => {
-    const entries: UserEntry[] = []
-    tyfcbs.forEach((t) => {
-      entries.push({
-        id: t.id,
-        userName: t.user_name,
-        chapterName: t.chapters?.name || "—",
-        type: "TYFCB",
-        detail: `${t.amount} — ${t.business_type} (Thank you to: ${t.thank_you_to})`,
-        date: new Date(t.created_at).toISOString().split("T")[0],
-      })
-    })
-    referrals.forEach((r) => {
-      entries.push({
-        id: r.id + 10000,
-        userName: r.user_name,
-        chapterName: r.chapters?.name || "—",
-        type: "Referral",
-        detail: `To: ${r.referred_to} — ${r.referral} [${r.referral_status}]`,
-        date: new Date(r.created_at).toISOString().split("T")[0],
-      })
-    })
-    oneAndOnes.forEach((o) => {
-      entries.push({
-        id: o.id + 20000,
-        userName: o.user_name,
-        chapterName: o.chapters?.name || "—",
-        type: "1 & 1",
-        detail: `Met ${o.met_with} at ${o.where_did_you_meet}`,
-        date: o.date,
-      })
-    })
-    entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    return entries
-  }, [tyfcbs, referrals, oneAndOnes])
-
-  const filteredEntries = allEntries
 
   const resetCreateForm = () => {
     setNewUserName("")
@@ -168,7 +127,10 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
       } else {
         setCreateSuccess(true)
         resetCreateForm()
-        setTimeout(() => setShowCreateForm(false), 1500)
+        setTimeout(() => {
+          setShowCreateForm(false)
+          window.location.reload()
+        }, 1000)
       }
     } catch (err) {
       setCreateError(String(err))
@@ -201,9 +163,7 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
           <div>
             <h1 className="text-2xl font-bold">Users</h1>
-            <p className="text-sm text-muted-foreground">
-              Manage members and view activity
-            </p>
+            <p className="text-sm text-muted-foreground">Manage user accounts</p>
           </div>
 
           {/* Create User Card */}
@@ -216,7 +176,7 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
                       <UserPlusIcon className="size-4 text-red-600" />
                       Create New User
                     </CardTitle>
-                    <CardDescription>Add a new member to {isAdmin ? "any chapter" : "your chapter"}</CardDescription>
+                    <CardDescription>Add a new user account</CardDescription>
                   </div>
                   <DialogTrigger
                     render={
@@ -232,7 +192,7 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
             <DialogContent className="sm:max-w-md">
               <DialogHeader>
                 <DialogTitle>Create New User</DialogTitle>
-                <DialogDescription>Fill in the details to create a new member account</DialogDescription>
+                <DialogDescription>Fill in the details to create a new user account</DialogDescription>
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 {createError && (
@@ -292,52 +252,49 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
             </DialogContent>
           </Dialog>
 
-          {/* User Activity Table */}
+          {/* Users Table */}
           <Card>
             <CardHeader>
-              <CardTitle>User Activity</CardTitle>
-              <CardDescription>
-                Showing {filteredEntries.length} entries
-              </CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <UsersIcon className="size-5" />
+                User Accounts
+              </CardTitle>
+              <CardDescription>Showing {users.length} user accounts</CardDescription>
             </CardHeader>
             <CardContent>
-              {filteredEntries.length === 0 ? (
+              {users.length === 0 ? (
                 <div className="flex h-32 items-center justify-center">
-                  <span className="text-sm text-muted-foreground">No user activity found.</span>
+                  <span className="text-sm text-muted-foreground">No user accounts found. Create one above.</span>
                 </div>
               ) : (
                 <Table>
                   <TableHeader>
                     <TableRow>
                       <TableHead className="w-16">Sno</TableHead>
-                      <TableHead>User Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Role</TableHead>
                       <TableHead>Chapter</TableHead>
-                      <TableHead>Type</TableHead>
-                      <TableHead>Detail</TableHead>
-                      <TableHead className="text-right">Date</TableHead>
+                      <TableHead className="text-right">Created</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredEntries.map((entry, index) => (
-                      <TableRow key={`${entry.type}-${entry.id}`}>
+                    {users.map((user, index) => (
+                      <TableRow key={user.id}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell className="font-medium">{entry.userName}</TableCell>
-                        <TableCell>{entry.chapterName}</TableCell>
+                        <TableCell className="font-medium">{user.email}</TableCell>
                         <TableCell>
-                          <span
-                            className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                              entry.type === "TYFCB"
-                                ? "bg-emerald-50 text-emerald-700"
-                                : entry.type === "Referral"
-                                  ? "bg-blue-50 text-blue-700"
-                                  : "bg-violet-50 text-violet-700"
-                            }`}
-                          >
-                            {entry.type}
+                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
+                            user.role === "admin" || user.role === "superadmin"
+                              ? "bg-red-50 text-red-700"
+                              : "bg-blue-50 text-blue-700"
+                          }`}>
+                            {user.role}
                           </span>
                         </TableCell>
-                        <TableCell className="text-muted-foreground">{entry.detail}</TableCell>
-                        <TableCell className="text-right text-muted-foreground">{entry.date}</TableCell>
+                        <TableCell>{user.chapters?.name || "—"}</TableCell>
+                        <TableCell className="text-right text-muted-foreground">
+                          {new Date(user.created_at).toLocaleDateString("en-IN")}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { createClient } from "@/lib/supabase/server"
-import { getServerChapters, getServerTyfcbs, getServerReferrals, getServerOneAndOnes } from "@/lib/supabase/server-data"
 import ClientUsers from "./components/ClientUsers"
 
 export const metadata: Metadata = {
@@ -11,40 +10,35 @@ export default async function UsersPage() {
   const supabase = await createClient()
   const { data: { session } } = await supabase.auth.getSession()
 
-  const [chapters, tyfcbs, referrals, oneAndOnes] = await Promise.all([
-    getServerChapters(),
-    getServerTyfcbs(),
-    getServerReferrals(),
-    getServerOneAndOnes(),
-  ])
+  // Fetch all created user accounts
+  const { data: users } = await supabase
+    .from("users")
+    .select("*, chapters(name)")
+    .order("created_at", { ascending: false })
 
-  const currentUser = session?.user
-    ? {
-        id: session.user.id,
-        email: session.user.email ?? "",
-        role: (session.user.user_metadata as Record<string, string>)?.role ?? "member",
-        chapter_id: null as number | null,
-      }
-    : null
+  // Fetch chapters for the create form
+  const { data: chapters } = await supabase
+    .from("chapters")
+    .select("*")
+    .order("id", { ascending: true })
 
-  // Fetch profile for role/chapter_id if user is logged in
-  let profile = null
-  if (currentUser) {
-    const { data } = await supabase
+  let currentUser = null
+  if (session?.user) {
+    const { data, error } = await supabase
       .from("users")
       .select("id, email, role, chapter_id")
-      .eq("id", currentUser.id)
+      .eq("id", session.user.id)
       .single()
-    profile = data
+    if (!error && data) {
+      currentUser = data
+    }
   }
 
   return (
     <ClientUsers
-      chapters={chapters}
-      tyfcbs={tyfcbs}
-      referrals={referrals}
-      oneAndOnes={oneAndOnes}
-      currentUser={profile ?? currentUser}
+      users={users ?? []}
+      chapters={chapters ?? []}
+      currentUser={currentUser}
     />
   )
 }
