@@ -50,7 +50,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { UsersIcon, PlusIcon, EyeIcon, EyeOffIcon, Loader2Icon } from "lucide-react"
+import { UsersIcon, PlusIcon, EyeIcon, EyeOffIcon, Loader2Icon, UserPlusIcon } from "lucide-react"
 import type { Chapter, Tyfcb, Referral, OneAndOne } from "@/lib/supabase/database.types"
 
 interface UserEntry {
@@ -110,7 +110,7 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
       entries.push({
         id: t.id,
         userName: t.user_name,
-        chapterName: (t as unknown as { chapters?: { name?: string } }).chapters?.name || "—",
+        chapterName: t.chapters?.name || "—",
         type: "TYFCB",
         detail: `${t.amount} — ${t.business_type} (Thank you to: ${t.thank_you_to})`,
         date: new Date(t.created_at).toISOString().split("T")[0],
@@ -120,7 +120,7 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
       entries.push({
         id: r.id + 10000,
         userName: r.user_name,
-        chapterName: (r as unknown as { chapters?: { name?: string } }).chapters?.name || "—",
+        chapterName: r.chapters?.name || "—",
         type: "Referral",
         detail: `To: ${r.referred_to} — ${r.referral} [${r.referral_status}]`,
         date: new Date(r.created_at).toISOString().split("T")[0],
@@ -130,7 +130,7 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
       entries.push({
         id: o.id + 20000,
         userName: o.user_name,
-        chapterName: (o as unknown as { chapters?: { name?: string } }).chapters?.name || "—",
+        chapterName: o.chapters?.name || "—",
         type: "1 & 1",
         detail: `Met ${o.met_with} at ${o.where_did_you_meet}`,
         date: o.date,
@@ -216,27 +216,36 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold">Users</h1>
-              <p className="text-sm text-muted-foreground">
-                {isAdmin ? "Manage members and view activity" : `Your chapter: ${userChapterName || "Not assigned"}`}
-              </p>
-            </div>
-            {isAdmin && (
+          <div>
+            <h1 className="text-2xl font-bold">Users</h1>
+            <p className="text-sm text-muted-foreground">
+              {isAdmin ? "Manage members and view activity across all chapters" : `Your chapter: ${userChapterName || "Not assigned"}`}
+            </p>
+          </div>
+
+          {/* Create User Card */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <UserPlusIcon className="size-4 text-red-600" />
+                Create New User
+              </CardTitle>
+              <CardDescription>Add a new member to {isAdmin ? "any chapter" : "your chapter"}</CardDescription>
+            </CardHeader>
+            <CardContent>
               <Dialog open={showCreateForm} onOpenChange={(open) => { setShowCreateForm(open); if (!open) resetCreateForm(); }}>
                 <DialogTrigger
                   render={
                     <Button className="bg-red-600 hover:bg-red-700">
                       <PlusIcon className="mr-2 size-4" />
-                      Add User
+                      Create User
                     </Button>
                   }
                 />
                 <DialogContent className="sm:max-w-md">
                   <DialogHeader>
                     <DialogTitle>Create New User</DialogTitle>
-                    <DialogDescription>Add a new member to the chapter</DialogDescription>
+                    <DialogDescription>Fill in the details to create a new member account</DialogDescription>
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     {createError && (
@@ -324,8 +333,8 @@ export default function ClientUsers({ chapters, tyfcbs, referrals, oneAndOnes, c
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-            )}
-          </div>
+            </CardContent>
+          </Card>
 
           {/* Chapter Filter Card */}
           <Card>
