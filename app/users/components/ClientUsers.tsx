@@ -108,6 +108,10 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
 
   const openCreateForm = () => {
     resetForm()
+    // Auto-assign admin's chapter
+    if (!isSuperadmin && currentUser?.chapter_id) {
+      setFormChapterId(String(currentUser.chapter_id))
+    }
     setShowForm(true)
   }
 
@@ -296,15 +300,17 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
                       </button>
                     </div>
                   </div>
-                  <div className="grid gap-2">
-                    <Label>Chapter</Label>
-                    <Select value={formChapterId} onValueChange={(v) => setFormChapterId(v ?? "")}>
-                      <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
-                      <SelectContent>
-                        {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  {isSuperadmin && (
+                    <div className="grid gap-2">
+                      <Label>Chapter</Label>
+                      <Select value={formChapterId} onValueChange={(v) => setFormChapterId(v ?? "")}>
+                        <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                        <SelectContent>
+                          {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
                   <div className="grid gap-2">
                     <Label>Role</Label>
                     <Select value={formRole} onValueChange={(v) => setFormRole(v ?? "member")}>
@@ -312,7 +318,7 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
                       <SelectContent>
                         <SelectItem value="member">Member</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
-                        <SelectItem value="superadmin">Super Admin</SelectItem>
+                        {isSuperadmin && <SelectItem value="superadmin">Super Admin</SelectItem>}
                       </SelectContent>
                     </Select>
                   </div>
@@ -407,7 +413,7 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
                       <TableHead className="text-center"><span title="1 & 1s"><HandshakeIcon className="size-3.5 inline" /></span></TableHead>
                       <TableHead className="text-center"><span title="Attendance"><CalendarCheckIcon className="size-3.5 inline" /></span></TableHead>
                       <TableHead className="text-right">Created</TableHead>
-                      {isSuperadmin && <TableHead className="w-20 text-right">Actions</TableHead>}
+                      {isAdmin && <TableHead className="w-20 text-right">Actions</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -455,7 +461,7 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
                           <TableCell className="text-right text-muted-foreground text-sm">
                             {new Date(user.created_at).toLocaleDateString("en-IN")}
                           </TableCell>
-                          {isSuperadmin && (
+                          {isAdmin && (
                             <TableCell className="text-right">
                               <div className="flex items-center justify-end gap-1">
                                 <button onClick={() => openEditForm(user)} className="p-1.5 rounded hover:bg-muted" title="Edit">
@@ -470,7 +476,7 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
                         </TableRow>
                         {expandedUser === user.id && (
                           <TableRow key={`${user.id}-detail`}>
-                            <TableCell colSpan={isSuperadmin ? 12 : 11} className="bg-muted/20 p-4">
+                            <TableCell colSpan={isAdmin ? 12 : 11} className="bg-muted/20 p-4">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 <div className="rounded-lg border bg-white p-3">
                                   <div className="flex items-center gap-2 mb-1">
