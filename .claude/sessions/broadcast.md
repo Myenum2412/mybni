@@ -31,3 +31,6 @@
 
 ## 2026-06-22T07:11:26Z [1a851855-b3f]
 📁 `/root/mybni/app/api/users/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-22T07:25:32Z [1a851855-b3f]
+📁 `/root/mybni/app/api/users/route.ts` が変更されました: パターン 'api/' にマッチ

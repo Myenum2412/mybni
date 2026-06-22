@@ -42,3 +42,4 @@
 {"event":"task_completed","teammate":"","task_id":"10","subject":"Update database.types.ts with user_id","description":"Add user_id to all 4 table types (tyfcbs, referrals, one_and_ones, attendance)","timestamp":"2026-06-22T07:10:52Z"}
 {"event":"task_completed","teammate":"","task_id":"11","subject":"Update entry form to use authenticated user","description":"Wire entry form to use logged-in user's id/name instead of free-text user_name","timestamp":"2026-06-22T07:15:51Z"}
 {"event":"task_completed","teammate":"","task_id":"13","subject":"Add name column to users table","description":"Add name column to users table migration and types, update API route","timestamp":"2026-06-22T07:15:52Z"}
+{"event":"task_completed","teammate":"","task_id":"12","subject":"Update Users page with connected data","description":"Show per-user stats from all tables, expandable detail rows","timestamp":"2026-06-22T07:19:07Z"}
