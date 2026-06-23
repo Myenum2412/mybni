@@ -19,13 +19,13 @@ export default async function ReportsPage() {
     getServerChapters(),
   ])
 
-  // Resolve admin's chapter name
+  // Resolve DC's chapter name (org sees all)
   let chapterName: string | null = null
   let chapterTyfcbs = tyfcbs
   let chapterReferrals = referrals
   let chapterOneAndOnes = oneAndOnes
 
-  if (userRole === "admin" && userChapterId) {
+  if (userRole === "dc" && userChapterId) {
     const chapter = chapters.find((c) => c.id === userChapterId)
     if (chapter) {
       chapterName = chapter.name
@@ -35,9 +35,9 @@ export default async function ReportsPage() {
     }
   }
 
-  // Calculate attendance summary for admin chapter
+  // Calculate attendance summary for DC chapter
   let attendanceSummary: { date: string; present: number; total: number }[] = []
-  if (userRole === "admin" && userChapterId) {
+  if (userRole === "dc" && userChapterId) {
     const members = await getServerChapterMembers(userChapterId)
     // Get last 7 days attendance
     const dates: string[] = []

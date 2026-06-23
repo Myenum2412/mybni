@@ -1,11 +1,8 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, NextRequest } from "next/server"
 
-const publicPaths = ["/login", "/auth", "/api/migrate", "/api/users", "/entry-form"]
+const publicPaths = ["/login", "/auth", "/api/migrate", "/api/users", "/api/setup", "/entry-form"]
 const authPaths = ["/login", "/auth/callback"]
-
-// Paths admin role cannot access (superadmin-only)
-const adminBlockedPaths = ["/admin", "/settings"]
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
@@ -57,19 +54,20 @@ export async function middleware(request: NextRequest) {
 
     const role = profile?.role ?? null
 
-    // Admin: block superadmin-only paths
-    if (role === "admin") {
-      if (adminBlockedPaths.some((p) => pathname.startsWith(p))) {
+    // DC: block org-only and settings paths
+    if (role === "dc") {
+      const dcBlockedPaths = ["/org", "/settings"]
+      if (dcBlockedPaths.some((p) => pathname.startsWith(p))) {
         return NextResponse.redirect(new URL("/dashboard", request.url))
       }
     }
 
-    // Member: only allow specific paths
+    // Member: only allow attendance
     if (role === "member") {
-      const allowedPaths = ["/dashboard", "/members", "/attendance", "/tyfcb", "/referral-slip", "/one-and-one", "/entry-form", "/api", "/settings"]
+      const allowedPaths = ["/dashboard", "/attendance", "/api"]
       const isAllowed = allowedPaths.some((p) => pathname.startsWith(p))
       if (!isAllowed) {
-        return NextResponse.redirect(new URL("/members", request.url))
+        return NextResponse.redirect(new URL("/attendance", request.url))
       }
     }
   }

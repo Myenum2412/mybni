@@ -119,7 +119,7 @@ export default function ClientReports({
               Reports{chapterName ? ` — ${chapterName}` : ""}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {userRole === "admin" ? "Chapter performance summary" : "All chapters performance summary"}
+              {userRole === "dc" ? "Chapter performance summary" : "All chapters performance summary"}
             </p>
           </div>
 
@@ -143,8 +143,8 @@ export default function ClientReports({
             ))}
           </div>
 
-          {/* Attendance Trend — admin only */}
-          {userRole === "admin" && attendanceSummary.length > 0 && (
+          {/* Attendance Trend — DC only */}
+          {userRole === "dc" && attendanceSummary.length > 0 && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">

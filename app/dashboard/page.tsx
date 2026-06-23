@@ -17,8 +17,8 @@ export default async function DashboardPage() {
     userChapterId = profile?.chapter_id ?? null
   }
 
-  // Chapter-admin scoped data
-  const chapterScope = userRole === "admin" ? userChapterId : null
+  // DC scoped data (org sees all)
+  const chapterScope = userRole === "dc" ? userChapterId : null
 
   const [stats, activities] = await Promise.all([
     getServerDashboardStats(chapterScope),

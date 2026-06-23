@@ -20,7 +20,7 @@ export default async function AttendanceOnlyPage() {
   }
 
   const allChapters = await getServerChapters()
-  const chapters = userRole === "admin" && userChapterId
+  const chapters = userRole === "dc" && userChapterId
     ? allChapters.filter((c) => c.id === userChapterId)
     : allChapters
 

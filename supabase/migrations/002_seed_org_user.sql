@@ -1,0 +1,15 @@
+-- Seed org user
+-- Run this in Supabase SQL Editor AFTER creating the auth user via Supabase Dashboard or signup
+--
+-- Step 1: Go to Supabase Dashboard → Authentication → Users → Add User
+--   Email: admin@bni.com
+--   Password: admin123
+--   Auto-confirm: ON
+--
+-- Step 2: Copy the user's UUID from the Auth dashboard, then run:
+--
+-- INSERT INTO public.users (id, email, name, role, chapter_id)
+-- VALUES ('<PASTE_UUID_HERE>', 'admin@bni.com', 'Org Admin', 'org', NULL);
+--
+-- Or, if the user already signed up via the app, just promote them:
+-- UPDATE public.users SET role = 'org', chapter_id = NULL WHERE email = 'admin@bni.com';

@@ -151,15 +151,15 @@ export default function ClientAttendance({ chapters, userRole, defaultChapterId 
         </header>
 
         <div className="flex flex-1 flex-col gap-6 p-4 md:p-6 bg-muted/20 min-h-0">
-          {/* Title + Chapter selector row (hidden for admin — auto-scoped) */}
+          {/* Title + Chapter selector row (hidden for DC — auto-scoped) */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold tracking-tight">
-                Attendance{userRole === "admin" && chapters.length > 0 ? ` — ${chapters[0].name}` : ""}
+                Attendance{userRole === "dc" && chapters.length > 0 ? ` — ${chapters[0].name}` : ""}
               </h1>
               <p className="text-sm text-muted-foreground mt-0.5">Track chapter meeting attendance</p>
             </div>
-            {userRole !== "admin" && (
+            {userRole !== "dc" && (
               <Select
                 value={selectedChapter?.toString() || ""}
                 onValueChange={(v) => { setSelectedChapter(Number(v)); setSelectedDate(null) }}

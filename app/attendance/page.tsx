@@ -19,8 +19,8 @@ export default async function AttendancePage() {
 
   const allChapters = await getServerChapters()
 
-  // Admin: only see their chapter. Superadmin/member: all chapters.
-  const chapters = userRole === "admin" && userChapterId
+  // DC: only see their chapter. Org: all chapters.
+  const chapters = userRole === "dc" && userChapterId
     ? allChapters.filter((c) => c.id === userChapterId)
     : allChapters
 
@@ -28,7 +28,7 @@ export default async function AttendancePage() {
     <ClientAttendance
       chapters={chapters}
       userRole={userRole}
-      defaultChapterId={userRole === "admin" ? userChapterId : null}
+      defaultChapterId={userRole === "dc" ? userChapterId : null}
     />
   )
 }

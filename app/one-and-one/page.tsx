@@ -17,7 +17,7 @@ export default async function OneAndOnePage() {
     chapterId = profile?.chapter_id ?? null
   }
 
-  const scope = userRole === "admin" ? chapterId : null
+  const scope = userRole === "dc" ? chapterId : null
   const oneAndOnes = await getServerOneAndOnes(scope)
 
   return <ClientOneAndOne oneAndOnes={oneAndOnes} userRole={userRole} />

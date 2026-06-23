@@ -37,3 +37,18 @@
 
 ## 2026-06-22T07:51:08Z [1a851855-b3f]
 📁 `/root/mybni/app/api/setup/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-23T05:58:17Z [62b370d8-1bc]
+📁 `/root/mybni/app/api/users/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-23T05:58:55Z [62b370d8-1bc]
+📁 `/root/mybni/app/api/migrate/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-23T10:46:12Z [ae90f0ed-c98]
+📁 `/root/mybni/app/api/migrate/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-23T11:08:32Z [ae90f0ed-c98]
+📁 `/root/mybni/app/api/setup/route.ts` が変更されました: パターン 'api/' にマッチ
+
+## 2026-06-23T11:23:46Z [ae90f0ed-c98]
+📁 `/root/mybni/app/api/setup/route.ts` が変更されました: パターン 'api/' にマッチ

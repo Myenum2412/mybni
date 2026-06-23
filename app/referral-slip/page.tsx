@@ -17,7 +17,7 @@ export default async function ReferralSlipPage() {
     chapterId = profile?.chapter_id ?? null
   }
 
-  const scope = userRole === "admin" ? chapterId : null
+  const scope = userRole === "dc" ? chapterId : null
   const referrals = await getServerReferrals(scope)
 
   return <ClientReferralSlip referrals={referrals} userRole={userRole} />

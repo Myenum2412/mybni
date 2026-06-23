@@ -11,7 +11,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { LayoutDashboardIcon, HeartHandshakeIcon, FileTextIcon, HandshakeIcon, SettingsIcon, UsersIcon, ShieldIcon, UserCheckIcon, CalendarIcon, BarChart3Icon } from "lucide-react"
+import { LayoutDashboardIcon, HeartHandshakeIcon, SettingsIcon, UsersIcon, ShieldIcon, UserCheckIcon, CalendarIcon } from "lucide-react"
 
 interface NavItem {
   title: string
@@ -22,8 +22,8 @@ interface NavItem {
 }
 
 function buildNavForRole(role: string | null): NavItem[] {
-  if (role === "admin") {
-    return [
+  if (role === "org" || role === "dc") {
+    const base = [
       { title: "Dashboard", url: "/dashboard", icon: <LayoutDashboardIcon />, isActive: true },
       { title: "Tools", url: "#", icon: <HeartHandshakeIcon />, items: [
         { title: "TYFCB", url: "/tyfcb" },
@@ -33,34 +33,23 @@ function buildNavForRole(role: string | null): NavItem[] {
       { title: "Performance", url: "#", icon: <CalendarIcon />, items: [
         { title: "Attendance", url: "/attendance" },
       ]},
-      { title: "Reports", url: "/reports", icon: <BarChart3Icon /> },
     ]
+    if (role === "org") {
+      return [
+        ...base,
+        { title: "Users", url: "/users", icon: <UsersIcon /> },
+        { title: "Members", url: "/member", icon: <UserCheckIcon /> },
+        { title: "Org", url: "/org", icon: <ShieldIcon /> },
+      ]
+    }
+    // DC — no Users/Members/Org
+    return base
   }
 
-  if (role === "member") {
-    return [
-      { title: "Dashboard", url: "/dashboard", icon: <LayoutDashboardIcon />, isActive: true },
-      { title: "Members", url: "/members", icon: <UserCheckIcon /> },
-    ]
-  }
-
-  // Superadmin / default — full nav
+  // Member — minimal nav
   return [
     { title: "Dashboard", url: "/dashboard", icon: <LayoutDashboardIcon />, isActive: true },
-    { title: "Tools", url: "#", icon: <HeartHandshakeIcon />, items: [
-      { title: "TYFCB", url: "/tyfcb" },
-      { title: "Referral Slip", url: "/referral-slip" },
-      { title: "1 & 1", url: "/one-and-one" },
-      { title: "Chapters", url: "/chapters" },
-    ]},
-    { title: "Performance", url: "#", icon: <CalendarIcon />, items: [
-      { title: "Attendance", url: "/attendance" },
-      { title: "Visitor", url: "/visitor" },
-      { title: "Testimonials", url: "/testimonials" },
-    ]},
-    { title: "Users", url: "/users", icon: <UsersIcon /> },
-    { title: "Members", url: "/members", icon: <UserCheckIcon /> },
-    { title: "Admin", url: "/admin", icon: <ShieldIcon /> },
+    { title: "Attendance", url: "/attendance", icon: <CalendarIcon /> },
   ]
 }
 

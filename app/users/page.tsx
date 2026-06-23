@@ -21,15 +21,11 @@ export default async function UsersPage() {
     userChapterId = profile?.chapter_id ?? null
   }
 
-  // Admin: only see users from their chapter. Superadmin: see all.
-  const chapterScope = userRole === "admin" ? userChapterId : null
+  // DC: only see users from their chapter. Org: see all.
+  const chapterScope = userRole === "dc" ? userChapterId : null
   const users = await getServerUsersWithJoinedData(chapterScope)
 
-  // Only fetch chapters for superadmin (admin doesn't need chapter selector)
-  let chapters: Awaited<ReturnType<typeof getServerChapters>> = []
-  if (userRole === "superadmin") {
-    chapters = await getServerChapters()
-  }
+  const chapters = await getServerChapters()
 
   return (
     <ClientUsers

@@ -3,7 +3,7 @@ import { getServerTyfcbs, getServerReferrals, getServerOneAndOnes, getServerChap
 import ClientMembers from "./components/ClientMembers"
 
 export const metadata: Metadata = {
-  title: "Members",
+  title: "Member",
 }
 
 export default async function MembersPage() {

@@ -4,7 +4,7 @@ import { getServerChapters, getServerTyfcbs, getServerReferrals, getServerOneAnd
 import ClientAdmin from "./components/ClientAdmin"
 
 export const metadata: Metadata = {
-  title: "Admin",
+  title: "Org",
 }
 
 export default async function AdminPage() {

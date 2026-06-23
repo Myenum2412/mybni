@@ -17,9 +17,9 @@ export default async function EntryFormPage() {
     userChapterId = profile?.chapter_id ?? null
   }
 
-  // Admin: only fetch their chapter. Public/superadmin: fetch all.
+  // DC: only fetch their chapter. Org: fetch all.
   const chapters = await getServerChapters()
-  const filteredChapters = userRole === "admin" && userChapterId
+  const filteredChapters = userRole === "dc" && userChapterId
     ? chapters.filter((c) => c.id === userChapterId)
     : chapters
 
@@ -27,7 +27,7 @@ export default async function EntryFormPage() {
     <ClientEntryForm
       chapters={filteredChapters}
       userRole={userRole}
-      defaultChapterId={userRole === "admin" ? userChapterId : null}
+      defaultChapterId={userRole === "dc" ? userChapterId : null}
       currentUser={currentUser ? { id: currentUser.id, email: currentUser.email ?? "", name: (currentUser.user_metadata as any)?.name ?? "" } : null}
     />
   )

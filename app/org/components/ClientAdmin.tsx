@@ -1,7 +1,5 @@
 "use client"
 
-import { useEffect } from "react"
-import { useRouter } from "next/navigation"
 import { AppSidebar } from "@/components/app-sidebar"
 import {
   Breadcrumb,
@@ -22,7 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { ShieldAlertIcon, UsersIcon, FileTextIcon, HandshakeIcon, HeartHandshakeIcon } from "lucide-react"
+import { UsersIcon, FileTextIcon, HandshakeIcon, HeartHandshakeIcon } from "lucide-react"
 
 interface ClientAdminProps {
   chaptersCount: number
@@ -33,32 +31,6 @@ interface ClientAdminProps {
 }
 
 export default function ClientAdmin({ chaptersCount, tyfcbsCount, referralsCount, oneAndOnesCount, userRole }: ClientAdminProps) {
-  const router = useRouter()
-
-  const isSuperadmin = userRole === "superadmin"
-
-  useEffect(() => {
-    if (!isSuperadmin) {
-      router.push("/dashboard")
-    }
-  }, [isSuperadmin, router])
-
-  if (!isSuperadmin) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="pt-6 text-center">
-            <ShieldAlertIcon className="mx-auto mb-4 size-12 text-destructive" />
-            <h2 className="text-xl font-bold">Access Denied</h2>
-            <p className="mt-2 text-sm text-muted-foreground">
-              You don't have permission to access this page. Admin role required.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
   return (
     <SidebarProvider>
       <AppSidebar role={userRole} />
@@ -70,7 +42,7 @@ export default function ClientAdmin({ chaptersCount, tyfcbsCount, referralsCount
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Admin</BreadcrumbPage>
+                  <BreadcrumbPage>Org</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -78,8 +50,8 @@ export default function ClientAdmin({ chaptersCount, tyfcbsCount, referralsCount
         </header>
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
           <div>
-            <h1 className="text-2xl font-bold">Admin Panel</h1>
-            <p className="text-sm text-muted-foreground">System overview and management</p>
+            <h1 className="text-2xl font-bold">Org Panel</h1>
+            <p className="text-sm text-muted-foreground">Organization overview and management</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

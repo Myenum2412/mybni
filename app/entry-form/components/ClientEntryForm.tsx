@@ -166,8 +166,8 @@ export default function ClientEntryForm({ chapters, userRole, defaultChapterId, 
                 <TabsTrigger value="one-and-one">1 & 1</TabsTrigger>
               </TabsList>
 
-              {/* Shared Chapter Select — hidden for admin (auto-assigned) */}
-              {userRole !== "admin" && (
+              {/* Shared Chapter Select — hidden for DC (auto-assigned) */}
+              {userRole !== "dc" && (
                 <Card className="mb-6">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-base">Chapter</CardTitle>

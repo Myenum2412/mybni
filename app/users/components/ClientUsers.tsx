@@ -38,13 +38,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
   UsersIcon, PlusIcon, EyeIcon, EyeOffIcon, Loader2Icon, UserPlusIcon,
   ChevronDownIcon, ChevronRightIcon, HeartHandshakeIcon, FileTextIcon,
-  HandshakeIcon, CalendarCheckIcon, Trash2Icon, PencilIcon, XIcon, CheckIcon,
+  HandshakeIcon, CalendarCheckIcon, Trash2Icon, PencilIcon, CheckIcon,
 } from "lucide-react"
 import type { Chapter } from "@/lib/supabase/database.types"
 
@@ -74,8 +80,7 @@ interface ClientUsersProps {
 }
 
 export default function ClientUsers({ users: initialUsers, chapters, currentUser }: ClientUsersProps) {
-  const isSuperadmin = currentUser?.role === "superadmin"
-  const isAdmin = currentUser?.role === "admin" || currentUser?.role === "superadmin"
+  const isOrg = currentUser?.role === "org"
   const userRole = currentUser?.role ?? null
 
   const [users, setUsers] = useState<UserAccount[]>(initialUsers)
@@ -108,8 +113,8 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
 
   const openCreateForm = () => {
     resetForm()
-    // Auto-assign admin's chapter
-    if (!isSuperadmin && currentUser?.chapter_id) {
+    // Auto-assign org/dc chapter
+    if (currentUser?.chapter_id) {
       setFormChapterId(String(currentUser.chapter_id))
     }
     setShowForm(true)
@@ -247,94 +252,86 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
               <h1 className="text-2xl font-bold">Users</h1>
               <p className="text-sm text-muted-foreground">Manage user accounts and view connected data</p>
             </div>
-            {isAdmin && !showForm && (
               <Button onClick={openCreateForm} className="bg-red-600 hover:bg-red-700">
                 <PlusIcon className="mr-2 size-4" />
                 Create User
               </Button>
-            )}
           </div>
 
-          {/* ── Create / Edit User Form ── */}
-          {showForm && isAdmin && (
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <UserPlusIcon className="size-4 text-red-600" />
-                    {editingUser ? "Edit User" : "Create New User"}
-                  </CardTitle>
-                  <button onClick={() => { setShowForm(false); resetForm(); }} className="rounded p-1 hover:bg-muted">
-                    <XIcon className="size-4" />
-                  </button>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {formError && (
-                  <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-600 mb-4">
-                    {formError}
-                  </div>
-                )}
-                {formSuccess && (
-                  <div className="rounded-md bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-600 mb-4 flex items-center gap-2">
-                    <CheckIcon className="size-4" />
-                    {editingUser ? "User updated successfully!" : "User created successfully!"}
-                  </div>
-                )}
+          {/* ── Create / Edit User Dialog ── */}
+          <Dialog open={showForm} onOpenChange={(open) => { if (!open) { setShowForm(false); resetForm(); } }}>
+            <DialogContent className="sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <UserPlusIcon className="size-4 text-red-600" />
+                  {editingUser ? "Edit User" : "Create New User"}
+                </DialogTitle>
+              </DialogHeader>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  <div className="grid gap-2">
-                    <Label>Full Name <span className="text-red-500">*</span></Label>
-                    <Input placeholder="John Doe" value={formName} onChange={(e) => setFormName(e.target.value)} />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Email <span className="text-red-500">*</span></Label>
-                    <Input type="email" placeholder="john@example.com" value={formEmail} onChange={(e) => setFormEmail(e.target.value)} />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label>Password {editingUser && <span className="text-muted-foreground text-xs">(leave blank to keep current)</span>}<span className="text-red-500">{!editingUser && " *"}</span></Label>
-                    <div className="relative">
-                      <Input type={showPassword ? "text" : "password"} placeholder="••••••••" value={formPassword} onChange={(e) => setFormPassword(e.target.value)} className="pr-10" />
-                      <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" tabIndex={-1}>
-                        {showPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
-                      </button>
-                    </div>
-                  </div>
-                  {isSuperadmin && (
-                    <div className="grid gap-2">
-                      <Label>Chapter</Label>
-                      <Select value={formChapterId} onValueChange={(v) => setFormChapterId(v ?? "")}>
-                        <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
-                        <SelectContent>
-                          {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  )}
-                  <div className="grid gap-2">
-                    <Label>Role</Label>
-                    <Select value={formRole} onValueChange={(v) => setFormRole(v ?? "member")}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="member">Member</SelectItem>
-                        <SelectItem value="admin">Admin</SelectItem>
-                        {isSuperadmin && <SelectItem value="superadmin">Super Admin</SelectItem>}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2 items-end">
-                    <Button onClick={handleSubmit} disabled={submitting} className="bg-red-600 hover:bg-red-700 w-full">
-                      {submitting ? (
-                        <><Loader2Icon className="mr-2 size-4 animate-spin" /> {editingUser ? "Updating..." : "Creating..."}</>
-                      ) : (
-                        <>{editingUser ? <><CheckIcon className="mr-2 size-4" /> Update User</> : <><PlusIcon className="mr-2 size-4" /> Create User</>}</>
-                      )}
-                    </Button>
+              {formError && (
+                <div className="rounded-md bg-red-50 border border-red-200 p-3 text-sm text-red-600">
+                  {formError}
+                </div>
+              )}
+              {formSuccess && (
+                <div className="rounded-md bg-emerald-50 border border-emerald-200 p-3 text-sm text-emerald-600 flex items-center gap-2">
+                  <CheckIcon className="size-4" />
+                  {editingUser ? "User updated successfully!" : "User created successfully!"}
+                </div>
+              )}
+
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <Label>Full Name <span className="text-red-500">*</span></Label>
+                  <Input placeholder="John Doe" value={formName} onChange={(e) => setFormName(e.target.value)} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Email <span className="text-red-500">*</span></Label>
+                  <Input type="email" placeholder="john@example.com" value={formEmail} onChange={(e) => setFormEmail(e.target.value)} />
+                </div>
+                <div className="grid gap-2">
+                  <Label>Password {editingUser && <span className="text-muted-foreground text-xs">(leave blank to keep current)</span>}<span className="text-red-500">{!editingUser && " *"}</span></Label>
+                  <div className="relative">
+                    <Input type={showPassword ? "text" : "password"} placeholder="••••••••" value={formPassword} onChange={(e) => setFormPassword(e.target.value)} className="pr-10" />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600" tabIndex={-1}>
+                      {showPassword ? <EyeOffIcon className="size-4" /> : <EyeIcon className="size-4" />}
+                    </button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          )}
+                <div className="grid gap-2">
+                  <Label>Chapter</Label>
+                  <Select value={formChapterId} onValueChange={(v) => setFormChapterId(v ?? "")}>
+                    <SelectTrigger><SelectValue placeholder="Select chapter" /></SelectTrigger>
+                    <SelectContent>
+                      {chapters.map((c) => (<SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="grid gap-2">
+                  <Label>Role</Label>
+                  <Select value={formRole} onValueChange={(v) => setFormRole(v ?? "member")}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="member">Member</SelectItem>
+                      <SelectItem value="dc">DC</SelectItem>
+                      <SelectItem value="org">Org</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <Button variant="outline" onClick={() => { setShowForm(false); resetForm(); }}>Cancel</Button>
+                <Button onClick={handleSubmit} disabled={submitting} className="bg-red-600 hover:bg-red-700">
+                  {submitting ? (
+                    <><Loader2Icon className="mr-2 size-4 animate-spin" /> {editingUser ? "Updating..." : "Creating..."}</>
+                  ) : (
+                    <>{editingUser ? <><CheckIcon className="mr-2 size-4" /> Update User</> : <><PlusIcon className="mr-2 size-4" /> Create User</>}</>
+                  )}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           {/* ── Summary Stats ── */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -413,7 +410,7 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
                       <TableHead className="text-center"><span title="1 & 1s"><HandshakeIcon className="size-3.5 inline" /></span></TableHead>
                       <TableHead className="text-center"><span title="Attendance"><CalendarCheckIcon className="size-3.5 inline" /></span></TableHead>
                       <TableHead className="text-right">Created</TableHead>
-                      {isAdmin && <TableHead className="w-20 text-right">Actions</TableHead>}
+                      {isOrg && <TableHead className="w-20 text-right">Actions</TableHead>}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -430,7 +427,7 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
                           <TableCell className="text-sm">{user.email}</TableCell>
                           <TableCell>
                             <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${
-                              user.role === "admin" || user.role === "superadmin"
+                              user.role === "org" || user.role === "dc"
                                 ? "bg-red-50 text-red-700"
                                 : "bg-blue-50 text-blue-700"
                             }`}>
@@ -461,7 +458,7 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
                           <TableCell className="text-right text-muted-foreground text-sm">
                             {new Date(user.created_at).toLocaleDateString("en-IN")}
                           </TableCell>
-                          {isAdmin && (
+                          {isOrg && (
                             <TableCell className="text-right">
                               <div className="flex items-center justify-end gap-1">
                                 <button onClick={() => openEditForm(user)} className="p-1.5 rounded hover:bg-muted" title="Edit">
@@ -476,7 +473,7 @@ export default function ClientUsers({ users: initialUsers, chapters, currentUser
                         </TableRow>
                         {expandedUser === user.id && (
                           <TableRow key={`${user.id}-detail`}>
-                            <TableCell colSpan={isAdmin ? 12 : 11} className="bg-muted/20 p-4">
+                            <TableCell colSpan={isOrg ? 12 : 11} className="bg-muted/20 p-4">
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 <div className="rounded-lg border bg-white p-3">
                                   <div className="flex items-center gap-2 mb-1">

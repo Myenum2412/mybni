@@ -7,10 +7,7 @@ import { useAuth } from "@/lib/supabase/auth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2Icon, EyeIcon, EyeOffIcon, ShieldIcon, CopyIcon, CheckIcon } from "lucide-react"
-
-const SUPERADMIN_EMAIL = "superadmin@bni.com"
-const SUPERADMIN_PASSWORD = "SuperAdmin@123"
+import { Loader2Icon, EyeIcon, EyeOffIcon } from "lucide-react"
 
 function LoginForm() {
   const router = useRouter()
@@ -21,8 +18,6 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [copiedField, setCopiedField] = useState<string | null>(null)
-  const [showCredentials, setShowCredentials] = useState(false)
 
   const redirectTo = searchParams.get("redirect") || "/dashboard"
 
@@ -47,41 +42,6 @@ function LoginForm() {
 
     router.push(redirectTo)
     router.refresh()
-  }
-
-  const handleQuickLogin = async () => {
-    setError(null)
-    setLoading(true)
-    setEmail(SUPERADMIN_EMAIL)
-    setPassword(SUPERADMIN_PASSWORD)
-
-    // First, try to create superadmin if it doesn't exist
-    try {
-      await fetch("/api/setup", { method: "POST" })
-    } catch {
-      // ignore setup errors, try login anyway
-    }
-
-    const { error: signInError } = await signIn(SUPERADMIN_EMAIL, SUPERADMIN_PASSWORD)
-
-    if (signInError) {
-      setError(signInError)
-      setLoading(false)
-      return
-    }
-
-    router.push(redirectTo)
-    router.refresh()
-  }
-
-  const copyToClipboard = async (text: string, field: string) => {
-    try {
-      await navigator.clipboard.writeText(text)
-      setCopiedField(field)
-      setTimeout(() => setCopiedField(null), 2000)
-    } catch {
-      // fallback
-    }
   }
 
   return (
@@ -159,65 +119,6 @@ function LoginForm() {
               </Button>
             </form>
 
-            {/* Super Admin Quick Access */}
-            <div className="mt-6 pt-6 border-t">
-              <button
-                onClick={() => setShowCredentials(!showCredentials)}
-                className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 w-full justify-center"
-              >
-                <ShieldIcon className="size-4" />
-                <span>Super Admin Access</span>
-              </button>
-
-              {showCredentials && (
-                <div className="mt-3 rounded-lg border bg-gray-50 p-3 space-y-3">
-                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider">Default Superadmin Credentials</div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-[10px] text-gray-400 uppercase">Email</div>
-                        <div className="text-sm font-mono">{SUPERADMIN_EMAIL}</div>
-                      </div>
-                      <button
-                        onClick={() => copyToClipboard(SUPERADMIN_EMAIL, "email")}
-                        className="p-1.5 rounded hover:bg-gray-200"
-                        title="Copy email"
-                      >
-                        {copiedField === "email" ? <CheckIcon className="size-3.5 text-green-600" /> : <CopyIcon className="size-3.5 text-gray-400" />}
-                      </button>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="text-[10px] text-gray-400 uppercase">Password</div>
-                        <div className="text-sm font-mono">{SUPERADMIN_PASSWORD}</div>
-                      </div>
-                      <button
-                        onClick={() => copyToClipboard(SUPERADMIN_PASSWORD, "password")}
-                        className="p-1.5 rounded hover:bg-gray-200"
-                        title="Copy password"
-                      >
-                        {copiedField === "password" ? <CheckIcon className="size-3.5 text-green-600" /> : <CopyIcon className="size-3.5 text-gray-400" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={handleQuickLogin}
-                    disabled={loading}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white text-sm"
-                  >
-                    <ShieldIcon className="mr-2 size-4" />
-                    Login as Super Admin
-                  </Button>
-
-                  <p className="text-[10px] text-gray-400 text-center">
-                    Run migration 004_seed_superadmin.sql in Supabase first to create this account
-                  </p>
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>

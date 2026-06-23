@@ -17,8 +17,8 @@ export default async function TYFCBPage() {
     chapterId = profile?.chapter_id ?? null
   }
 
-  // Admin sees only their chapter; superadmin sees all
-  const scope = userRole === "admin" ? chapterId : null
+  // DC sees only their chapter; org and others see all
+  const scope = userRole === "dc" ? chapterId : null
   const tyfcbs = await getServerTyfcbs(scope)
 
   return <ClientTyfcb tyfcbs={tyfcbs} userRole={userRole} />

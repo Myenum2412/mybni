@@ -325,7 +325,7 @@ export default function ClientMembers({
     )
   }
 
-  // ── Admin/Superadmin: show activity table ──
+  // ── Admin/DC: show activity table ──
   const [selectedChapter, setSelectedChapter] = useState<string>("all")
   const [selectedType, setSelectedType] = useState<string>("all")
 
@@ -391,7 +391,7 @@ export default function ClientMembers({
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Members</BreadcrumbPage>
+                  <BreadcrumbPage>Member</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -399,7 +399,7 @@ export default function ClientMembers({
         </header>
         <div className="flex flex-1 flex-col gap-6 p-4 pt-0">
           <div>
-            <h1 className="text-2xl font-bold">Members</h1>
+            <h1 className="text-2xl font-bold">Member Activity</h1>
             <p className="text-sm text-muted-foreground">Member activity across all chapters</p>
           </div>
 
